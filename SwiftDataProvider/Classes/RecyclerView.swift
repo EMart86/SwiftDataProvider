@@ -57,6 +57,8 @@ public protocol RecyclerView: class {
     func dequeueReusableHeaderFooterView<Content>(for content: Content) -> UITableViewHeaderFooterView?
 }
 
+//MARK: - UITableView
+
 public extension RecyclerView where Self: UITableView {
     public func updateHeights() {
         beginUpdates()
@@ -123,6 +125,8 @@ public extension RecyclerView where Self: UITableView {
         return cell
     }
 }
+
+//MARK: - UITableViewController
 
 public extension RecyclerView where Self: UITableViewController {
     public func updateHeights() {

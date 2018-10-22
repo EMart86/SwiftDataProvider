@@ -51,6 +51,13 @@ open class Section {
         context.reload(at: index)
     }
     
+    open func reload<Content: Comparable>(row: Content) {
+        guard let index = rows.index(where: { ($0 as? Content) == row } ) else {
+            return
+        }
+        reload(at: index)
+    }
+    
     open func indexPaths(for section: Int) -> (reload: [IndexPath]?, delete: [IndexPath]?, insert: [IndexPath]?)? {
         let reload = context.reload?.compactMap { IndexPath(row: $0, section: section) }
         let delete = context.delete?.compactMap { IndexPath(row: $0, section: section) }
