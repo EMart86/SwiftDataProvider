@@ -8,8 +8,8 @@
 
 Pod::Spec.new do |s|
   s.name             = 'SwiftDataProvider'
-  s.version          = '0.1.0'
-  s.summary          = 'A short description of SwiftDataProvider.'
+  s.version          = '1.0.0'
+  s.summary          = 'Lightweight wrapper for handling animated updates of the UITablewView or UITableViewController'
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
   s.description      = <<-DESC
-TODO: Add long description of the pod here.
+  Handling TableViews and animated updates is now easer than you think. Design your TableView with your Models instead of keeping track of all the IndexPaths and IndexSets.
                        DESC
 
   s.homepage         = 'https://github.com/EMart86/SwiftDataProvider'
@@ -29,6 +29,7 @@ TODO: Add long description of the pod here.
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.ios.deployment_target = '8.0'
+  s.swift_version = '4.1'
 
   s.source_files = 'SwiftDataProvider/Classes/**/*'
   

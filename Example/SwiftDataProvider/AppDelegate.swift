@@ -1,8 +1,8 @@
 //
 //  AppDelegate.swift
-//  SwiftDataProvider
+//  DynamicTableView
 //
-//  Created by EMart86 on 10/22/2018.
+//  Created by EMart86 on 10/11/2018.
 //  Copyright (c) 2018 EMart86. All rights reserved.
 //
 
