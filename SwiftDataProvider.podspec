@@ -8,8 +8,8 @@
 
 Pod::Spec.new do |s|
   s.name             = 'SwiftDataProvider'
-  s.version          = '1.1.0'
-  s.summary          = 'Lightweight wrapper for handling animated updates of the UITablewView or UITableViewController'
+  s.version          = '1.2.0'
+  s.summary          = 'Reduce boilerplate code for UITableView and UITableViewController\'s data source'
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -24,7 +24,7 @@ Pod::Spec.new do |s|
   s.homepage         = 'https://github.com/EMart86/SwiftDataProvider'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
-  s.author           = { 'EMart86' => 'martin.eberl@styria.com' }
+  s.author           = { 'Martin Eberl' => 'eberl_ma@gmx.at' }
   s.source           = { :git => 'https://github.com/EMart86/SwiftDataProvider.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
