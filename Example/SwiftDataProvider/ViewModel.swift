@@ -75,6 +75,7 @@ class ViewModel {
     }
     
     func addNewTimeEntry() {
+        
         type.addEntry(contentAdapter: contentAdapter)
     }
 }

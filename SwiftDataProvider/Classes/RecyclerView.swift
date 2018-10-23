@@ -48,6 +48,7 @@ public protocol RecyclerView: class {
     var registeredHeaderFooterForContentType: [String: AssemblableHeaderFooter] { get set }
     func updateHeights()
     func update(modifications: CellModifications)
+    func dequeueReusableCell<Content>(for content: Content) -> UITableViewCell?
 }
 
 //MARK: - UITableView

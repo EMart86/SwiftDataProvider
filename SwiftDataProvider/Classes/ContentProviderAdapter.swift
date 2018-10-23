@@ -17,11 +17,12 @@ open class ContentProviderAdapter {
         case reload
     }
     
-    internal(set) var sections: [Section]
+    public internal(set) var sections: [Section]
     fileprivate let context = CellModifications()
     public weak var delegate: ContentProviderAdapterDelegate?
     public var sectionContentUpdate: ((Section) -> SectionOperation)?
     public var sectionInitializer: ((Section) -> Void)?
+    public var isAutoCommitEnabled = false
     
     public init(sections: [Section] = [Section]()) {
         self.sections = sections
@@ -54,6 +55,8 @@ open class ContentProviderAdapter {
         section.delegate = self
         sectionInitializer?(section)
         context.insertSection(at: sections.count - 1)
+        
+        commitIfAutoCommitIsEnabled()
     }
     
     open func insert(section: Section, at index: Int) {
@@ -61,6 +64,17 @@ open class ContentProviderAdapter {
         section.delegate = self
         sectionInitializer?(section)
         context.insertSection(at: index)
+        
+        commitIfAutoCommitIsEnabled()
+    }
+    
+    open func reload(section: Section) {
+        guard let index = index(of: section) else {
+            return
+        }
+        context.reloadSection(at: index)
+        
+        commitIfAutoCommitIsEnabled()
     }
     
     open func remove(section: Section) {
@@ -69,6 +83,8 @@ open class ContentProviderAdapter {
         }
         sections.remove(at: index)
         context.deleteSection(at: index)
+        
+        commitIfAutoCommitIsEnabled()
     }
     
     // MARK: - private
@@ -77,6 +93,13 @@ open class ContentProviderAdapter {
     
     fileprivate func index(of section: Section) -> Int? {
         return sections.index(where: { section === $0 })
+    }
+    
+    fileprivate func commitIfAutoCommitIsEnabled() {
+        guard isAutoCommitEnabled else {
+            return
+        }
+        commit()
     }
 }
 
@@ -94,6 +117,8 @@ extension ContentProviderAdapter: SectionDelegate {
     
     func didUpdateRows(for section: Section) {
         updateRows(for: section)
+        
+        commitIfAutoCommitIsEnabled()
     }
 }
 

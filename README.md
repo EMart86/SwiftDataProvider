@@ -4,12 +4,19 @@
 [![Version](https://img.shields.io/cocoapods/v/SwiftDataProvider.svg?style=flat)](https://cocoapods.org/pods/SwiftDataProvider)
 [![License](https://img.shields.io/cocoapods/l/SwiftDataProvider.svg?style=flat)](https://cocoapods.org/pods/SwiftDataProvider)
 [![Platform](https://img.shields.io/cocoapods/p/SwiftDataProvider.svg?style=flat)](https://cocoapods.org/pods/SwiftDataProvider)
+[![MVVM](https://img.shields.io/cocoapods/p/SwiftDataProvider.svg?style=flat)](https://medium.com/flawless-app-stories/how-to-use-a-model-view-viewmodel-architecture-for-ios-46963c67be1b)
 
 ## Example
+
+Boilerplate code for TableViews and animated updates is history. Design your TableView with your Models instead of keeping track of all the IndexPaths and IndexSets, nice and easy.
 
 To run the example project, clone the repo, and run `pod install` from the Example directory first.
 
 ## Requirements
+
+iOS 8.0
+XCode 9.4.1
+Swift 4.1
 
 ## Installation
 
@@ -22,8 +29,143 @@ pod 'SwiftDataProvider'
 
 ## Author
 
-EMart86, martin.eberl@styria.com
+Martin Eberl, martin.eberl@styria.com
 
 ## License
 
 SwiftDataProvider is available under the MIT license. See the LICENSE file for more info.
+
+## Usage
+
+1) Implement UITableViewController or UITableView with the  `RecyclerView` protocol
+
+2) Hold a strong reference to the SwiftDataProvider
+```swift
+    private var SwiftDataProvider: SwiftDataProvider<Void, Void>?
+```
+
+3) Create a SwiftDataProvider instance eg in viewDidLoad and assign it as TableViewDataSource to the TableView
+```swift
+override func viewDidLoad() {
+    super.viewDidLoad()
+
+    let swiftDataProvider = SwiftDataProvider(recyclerView: self)
+    tableView.dataSource = swiftDataProvider
+    self.swiftDataProvider = swiftDataProvider
+
+    //step 4
+}
+```
+
+4) Register cells for reusing and mapping to the content it requires, eg below the initialization of the SwiftDataProvider
+```swift
+    register(cell: UITableViewCell.self, for: /*Your data model*/.self) { cell, content in
+        cell.textLabel?.text = content.formattedDate
+    }
+
+    register(cellReuseIdentifier: "TestCell", as: TestCell.self, for: TestCell.Content.self) { cell, content in
+        cell.content = content
+    }
+
+//step 5
+```
+
+5) Assign a content adapter. The example uses the [MVVM](https://medium.com/flawless-app-stories/how-to-use-a-model-view-viewmodel-architecture-for-ios-46963c67be1b) pattern but you can also implement the ContentAdapter in the ViewController.
+```swift
+    swiftDataProvider?.contentAdapter = viewModel.contentAdapter
+```
+
+6) a) Use a ContentProviderAdapter for self-controlled content and add sections and rows or update the section header and footer:
+```swift
+// in the ViewModel
+
+struct ViewModel {
+    let contentAdapter = ContentProviderAdapter()
+    let section = Section()
+    ...
+
+    init() {
+        //Use a string or a model, the string uses the default header view, the
+        //model requires you to provide a section header view
+        section.header = "" 
+        contentAdapter.add(section: section)
+        
+        //use automatically update if you'd like the table view 
+        //to be updated every time, something is being inserted, deleted or triggered a reload.
+        //Default is false, so you can do multible updates at a time
+        //contentAdapter.isAutoCommitEnabled = true
+    }
+
+    func addContent() {
+        section.add(row: /*Your data model*/)
+        // .. insert, remove models, cells ..
+        
+        //find a specific instance of a model in the section
+        let content: <Model Type> = section.content {
+            //return true or false
+        }
+        
+        //if you didn't enable the autocommit, you'll have to trigger the update 
+        contentAdapter.commit()
+    }
+    
+    func uödate
+}
+```
+
+6) b) or use a DynamicContentProviderAdapter for automatic-controlled content:
+```swift
+// in the ViewModel
+
+struct ViewModel {
+    let contentAdapter = DynamicContentProviderAdapter</*Your data model*/>()
+
+    ...
+
+    init() {
+        contentAdapter.sort = { $0 < $1 }
+        contentAdapter.sectionContentUpdate = { section in
+            //Update sectin content whenever a new row has been added
+            //use string to show the default section header view or a model, to use a custom view
+            section.header = "\(section.rows.count) Items" 
+            
+            //action to be used after a section update has performed (.none or .reload)
+            return .reload 
+        }
+        
+        //use automatically update if you'd like the table view 
+        //to be updated every time, something is being inserted, deleted or triggered a reload.
+        //Default is false, so you can do multible updates at a time
+        //contentAdapter.isAutoCommitEnabled = true
+        
+        contentAdapter.sectionInitializer = { section in
+            //Initialize sectin content the first time, a new Section has been created
+            //use string to show the default section header view or a model, to use a custom view
+            section.header = "\(section.rows.count) Items" 
+        }
+        
+        contentAdapter.contentSectionizer = { content, sections in
+            //Sectionize the content
+            //return .new or .use(index of the section) to create a new section or use the given section
+            guard let last = sections?.last else {
+                return .new
+            }
+            
+            //Here i'm filtering the row
+            //if the model to be added into a section is "older" than a minute, a new section will be created, otherwhise use the latest section
+            let rows = last.rows.compactMap { $0 as? TimeModel }
+            if let timeInterval = rows.first?.date.timeIntervalSince(content.date), timeInterval < -60 {
+                return .new
+            }
+            return .use((sections?.count ?? 1) - 1)
+        }
+    }
+
+    func addContent() {
+        contentAdapter.add(/*Your data model*/)
+        
+        //if you didn't enable the autocommit, you'll have to trigger the update 
+        contentAdapter.commit()
+    }
+}
+```
