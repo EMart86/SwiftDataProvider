@@ -4,7 +4,6 @@
 [![Version](https://img.shields.io/cocoapods/v/SwiftDataProvider.svg?style=flat)](https://cocoapods.org/pods/SwiftDataProvider)
 [![License](https://img.shields.io/cocoapods/l/SwiftDataProvider.svg?style=flat)](https://cocoapods.org/pods/SwiftDataProvider)
 [![Platform](https://img.shields.io/cocoapods/p/SwiftDataProvider.svg?style=flat)](https://cocoapods.org/pods/SwiftDataProvider)
-[![MVVM](https://img.shields.io/cocoapods/p/SwiftDataProvider.svg?style=flat)](https://medium.com/flawless-app-stories/how-to-use-a-model-view-viewmodel-architecture-for-ios-46963c67be1b)
 
 ## Example
 
