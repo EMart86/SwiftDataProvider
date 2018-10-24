@@ -173,4 +173,4 @@ struct ViewModel {
 
 The ContentProviderAdapter is a class in which you can controll the sections and the rows within the sections. This is mainly used when you know, how the content structure should look like. So you add several sections and rows to the sections.
 
-The DynamicContentProviderAdapter is a class in which you only provide content and the based on a given logic, the content is thrown into a specific order. However since the DynamicContentProviderAdapter is derived from ContentProviderAdapter, you can also provide custom sections.
+The DynamicContentProviderAdapter is a class in which you only provide content and based on a provided logic, the content is ordered into the section. However since the DynamicContentProviderAdapter is derived from ContentProviderAdapter, you can also provide custom sections.
