@@ -28,7 +28,7 @@ pod 'SwiftDataProvider'
 
 ## Author
 
-Martin Eberl, martin.eberl@styria.com
+Martin Eberl, eberl_ma@gmx.at
 
 ## License
 
