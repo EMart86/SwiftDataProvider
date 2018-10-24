@@ -36,14 +36,14 @@ SwiftDataProvider is available under the MIT license. See the LICENSE file for m
 
 ## Usage
 
-1) Implement UITableViewController or UITableView with the  `RecyclerView` protocol
+###1) Implement UITableViewController or UITableView with the  `RecyclerView` protocol
 
-2) Hold a strong reference to the SwiftDataProvider
+###2) Hold a strong reference to the SwiftDataProvider
 ```swift
     private var SwiftDataProvider: SwiftDataProvider<Void, Void>?
 ```
 
-3) Create a SwiftDataProvider instance eg in viewDidLoad and assign it as TableViewDataSource to the TableView
+###3) Create a SwiftDataProvider instance eg in viewDidLoad and assign it as TableViewDataSource to the TableView
 ```swift
 override func viewDidLoad() {
     super.viewDidLoad()
@@ -56,7 +56,7 @@ override func viewDidLoad() {
 }
 ```
 
-4) Register cells for reusing and mapping to the content it requires, eg below the initialization of the SwiftDataProvider
+###4) Register cells for reusing and mapping to the content it requires, eg below the initialization of the SwiftDataProvider
 ```swift
     register(cell: UITableViewCell.self, for: /*Your data model*/.self) { cell, content in
         cell.textLabel?.text = content.formattedDate
@@ -69,12 +69,12 @@ override func viewDidLoad() {
 //step 5
 ```
 
-5) Assign a content adapter. The example uses the [MVVM](https://medium.com/flawless-app-stories/how-to-use-a-model-view-viewmodel-architecture-for-ios-46963c67be1b) pattern but you can also implement the ContentAdapter in the ViewController.
+###5) Assign a content adapter. The example uses the [MVVM](https://medium.com/flawless-app-stories/how-to-use-a-model-view-viewmodel-architecture-for-ios-46963c67be1b) pattern but you can also implement the ContentAdapter in the ViewController.
 ```swift
     swiftDataProvider?.contentAdapter = viewModel.contentAdapter
 ```
 
-6) a) Use a ContentProviderAdapter for self-controlled content and add sections and rows or update the section header and footer:
+###6) a) Use a ContentProviderAdapter for self-controlled content and add sections and rows or update the section header and footer:
 ```swift
 // in the ViewModel
 
@@ -112,7 +112,7 @@ struct ViewModel {
 }
 ```
 
-6) b) or use a DynamicContentProviderAdapter for automatic-controlled content:
+###6) b) or use a DynamicContentProviderAdapter for automatic-controlled content:
 ```swift
 // in the ViewModel
 
@@ -168,3 +168,9 @@ struct ViewModel {
     }
 }
 ```
+
+### What is the difference between the ContentProviderAdapter and the DynamicContentProviderAdapter?
+
+The ContentProviderAdapter is a class in which you can controll the sections and the rows within the sections. This is mainly used when you know, how the content structure should look like. So you add several sections and rows to the sections.
+
+The DynamicContentProviderAdapter is a class in which you only provide content and the based on a given logic, the content is thrown into a specific order. However since the DynamicContentProviderAdapter is derived from ContentProviderAdapter, you can also provide custom sections.
