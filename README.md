@@ -91,7 +91,7 @@ struct ViewModel {
         
         //use automatically update if you'd like the table view 
         //to be updated every time, something is being inserted, deleted or triggered a reload.
-        //Default is false, so you can do multible updates at a time
+        //Default is false, so you can do multiple updates at a time
         //contentAdapter.isAutoCommitEnabled = true
     }
 
@@ -134,7 +134,7 @@ struct ViewModel {
         
         //use automatically update if you'd like the table view 
         //to be updated every time, something is being inserted, deleted or triggered a reload.
-        //Default is false, so you can do multible updates at a time
+        //Default is false, so you can do multiple updates at a time
         //contentAdapter.isAutoCommitEnabled = true
         
         contentAdapter.sectionInitializer = { section in
