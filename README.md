@@ -105,7 +105,7 @@ struct ViewModel {
             //return true or false
         }
         
-        //if you didn't enable the autocommit, you'll have to trigger the update manuelly
+        //if you didn't enable the autocommit, you'll have to trigger the update manually
         contentAdapter.commit()
     }
     
@@ -164,7 +164,7 @@ struct ViewModel {
     func addContent() {
         contentAdapter.add(/*Your data model*/)
         
-        //if you didn't enable the autocommit, you'll have to trigger the update manuelly
+        //if you didn't enable the autocommit, you'll have to trigger the update manually
         contentAdapter.commit()
     }
 }
