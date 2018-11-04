@@ -7,12 +7,9 @@
 
 import Foundation
 
-open class SwiftDataProvider<Header, Footer>: NSObject, DataSource, UITableViewDataSource {
-    public var cellProvider: ((Any?, IndexPath) -> UITableViewCell)?
-    public var cellAssembler: ((Any?, UITableViewCell) -> Void)?
-    var sectionHeader: ((Section) -> Header)?
-    var sectionHeaderViewProvider: ((Header?, Int) -> UIView)?
-    var sectionFooterViewProvider: ((Footer?, Int) -> UIView)?
+open class SwiftDataProvider: NSObject, DataSource, UITableViewDataSource {
+    private var registeredCellsForContentType = [String: Assemblable]()
+    private var registeredHeaderFooterForContentType = [String: AssemblableHeaderFooter]()
     
     public weak var contentAdapter: ContentProviderAdapter? {
         didSet {
@@ -25,6 +22,7 @@ open class SwiftDataProvider<Header, Footer>: NSObject, DataSource, UITableViewD
     public init(recyclerView: RecyclerView) {
         self.recyclerView = recyclerView
         super.init()
+        recyclerView.dataSource = self
     }
     
     var numberOfSections: Int {
@@ -48,6 +46,45 @@ open class SwiftDataProvider<Header, Footer>: NSObject, DataSource, UITableViewD
     
     func sectionFooter<Footer>(at section: Int) -> Footer? {
         return self.section(at: section)?.footer as? Footer
+    }
+    
+    // MARK: - Public
+    
+    public func register<Content, TableViewCell: UITableViewCell>(cell: TableViewCell.Type, for content: Content.Type, assemble: @escaping ((UITableViewCell, Content) -> Void)) {
+        let className = String.string(from: content)
+        recyclerView?.register(cell, forCellReuseIdentifier: className)
+        registeredCellsForContentType[className] = Assemble(reuseIdentifier: className, cellType: cell, assembler: assemble)
+    }
+    
+    public func register<Content, TableViewCell: UITableViewCell>(cellReuseIdentifier: String, as cell: TableViewCell.Type, for content: Content.Type, assemble: @escaping ((TableViewCell, Content) -> Void)) {
+        let className = String.string(from: content)
+        registeredCellsForContentType[className] = Assemble(reuseIdentifier: cellReuseIdentifier, cellType: cell, assembler: assemble)
+    }
+    
+    public func dequeueReusableCell<Content>(for content: Content) -> UITableViewCell? {
+        let className = String.string(from: type(of: content))
+        let assembler = registeredCellsForContentType[className]
+        guard let cell = recyclerView?.dequeueReusableCell(withIdentifier: assembler?.reuseIdentifier ?? className) else {
+            return nil
+        }
+        assembler?.assemble(cell: cell, with: content)
+        return cell
+    }
+    
+    public func registerHeaderFooter<Content, TableHeaderView: UITableViewHeaderFooterView>(view: TableHeaderView.Type, for content: Content.Type, assemble: @escaping ((TableHeaderView, Content) -> Void)) {
+        let className = String.string(from: content)
+        recyclerView?.register(view, forHeaderFooterViewReuseIdentifier: className)
+        registeredHeaderFooterForContentType[className] = AssembleHeaderFooter(reuseIdentifier: className, viewType: view, assembler: assemble)
+    }
+    
+    public func dequeueReusableHeaderFooterView<Content>(for content: Content) -> UITableViewHeaderFooterView? {
+        let className = String.string(from: type(of: content))
+        let assembler = registeredHeaderFooterForContentType[className]
+        guard let cell = recyclerView?.dequeueReusableHeaderFooterView(withIdentifier: assembler?.reuseIdentifier ?? className) else {
+            return nil
+        }
+        assembler?.assemble(view: cell, with: content)
+        return cell
     }
     
     // MARK: - Helper
@@ -81,17 +118,15 @@ open class SwiftDataProvider<Header, Footer>: NSObject, DataSource, UITableViewD
         guard let content = item(at: indexPath) else {
             return UITableViewCell()
         }
-        let cell = self.recyclerView?.dequeueReusableCell(for: content) ?? cellProvider?(content, indexPath) ?? UITableViewCell()
-        cellAssembler?(content, cell)
-        return cell
+        return dequeueReusableCell(for: content) ?? UITableViewCell()
     }
     
     public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return sectionHeaderViewProvider?(sectionHeader(at: section), section)
+        return sectionHeader(at: section)
     }
     
     public func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        return sectionFooterViewProvider?(sectionFooter(at: section), section)
+        return sectionFooter(at: section)
     }
     
     public func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {

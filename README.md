@@ -34,13 +34,34 @@ Martin Eberl, eberl_ma@gmx.at
 
 SwiftDataProvider is available under the MIT license. See the LICENSE file for more info.
 
+## What's new in
+### 1.5
+
+So, we reviewed our code and rethought of how we could improve and reduce code and there your are:
+
+1) No need for thouse Generics in SwiftDataProvider
+```swift
+private var swiftDataProvider: SwiftDataProvider?
+```
+2) No need to explicitly set the swiftDataProvider as the dataSource (we do that implicitly)
+```swift
+//tableView.dataSource = swiftDataProvider
+```
+3) No need to explicitly set the swiftDataProvider as the dataSource (we do that implicitly)
+```swift
+//tableView.dataSource = swiftDataProvider
+```
+4) DEPRECATIONS: Every ```register(::)``` methods have now been moved to SwiftDataProvider (due to code simplifying)
+
+If you have any problems with using this classes, please file an issue. I'd be happy with every feedback/codereview!
+
 ## Usage
 
 ### 1) Implement UITableViewController or UITableView with the  `RecyclerView` protocol
 
 ### 2) Hold a strong reference to the SwiftDataProvider
 ```swift
-    private var SwiftDataProvider: SwiftDataProvider<Void, Void>?
+    private var swiftDataProvider: SwiftDataProvider?
 ```
 
 ### 3) Create a SwiftDataProvider instance eg in viewDidLoad and assign it as TableViewDataSource to the TableView
@@ -48,9 +69,7 @@ SwiftDataProvider is available under the MIT license. See the LICENSE file for m
 override func viewDidLoad() {
     super.viewDidLoad()
 
-    let swiftDataProvider = SwiftDataProvider(recyclerView: self)
-    tableView.dataSource = swiftDataProvider
-    self.swiftDataProvider = swiftDataProvider
+    self.swiftDataProvider = SwiftDataProvider(recyclerView: self)
 
     //step 4
 }

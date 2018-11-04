@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'SwiftDataProvider'
-  s.version          = '1.4.0'
+  s.version          = '1.5.0'
   s.summary          = 'Reduce boilerplate code for UITableView and UITableViewController\'s data source'
 
 # This description is used to generate tags and improve search results.

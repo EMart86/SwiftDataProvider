@@ -7,53 +7,22 @@
 
 import UIKit
 
-public protocol Assemblable {
-    var reuseIdentifier: String { get }
-    func assemble(cell: UITableViewCell, with content: Any)
-}
-
-public protocol AssemblableHeaderFooter {
-    var reuseIdentifier: String { get }
-    func assemble(view: UITableViewHeaderFooterView, with content: Any)
-}
-
-struct Assemble<Content, TableViewCell: UITableViewCell>: Assemblable {
-    let reuseIdentifier: String
-    let cellType: TableViewCell.Type
-    let assembler: ((TableViewCell, Content) -> Void)
-    
-    func assemble(cell: UITableViewCell, with content: Any) {
-        guard let cell = cell as? TableViewCell, let content = content as? Content else {
-            return
-        }
-        assembler(cell, content)
-    }
-}
-
-struct AssembleHeaderFooter<Content, View: UITableViewHeaderFooterView>: AssemblableHeaderFooter {
-    let reuseIdentifier: String
-    let viewType: View.Type
-    let assembler: ((View, Content) -> Void)
-    
-    func assemble(view: UITableViewHeaderFooterView, with content: Any) {
-        guard let view = view as? View, let content = content as? Content else {
-            return
-        }
-        assembler(view, content)
-    }
-}
-
 public protocol RecyclerView: class {
-    var registeredCellsForContentType: [String: Assemblable] { get set }
-    var registeredHeaderFooterForContentType: [String: AssemblableHeaderFooter] { get set }
+    var dataSource: UITableViewDataSource? { get set }
     func updateHeights()
     func update(modifications: CellModifications)
-    func dequeueReusableCell<Content>(for content: Content) -> UITableViewCell?
+    
+    // MARK: - if Recycler View is in UITableView
+    func register(_ cellClass: AnyClass?, forCellReuseIdentifier identifier: String)
+    func dequeueReusableCell(withIdentifier identifier: String) -> UITableViewCell?
+    func register(_ aClass: AnyClass?, forHeaderFooterViewReuseIdentifier identifier: String)
+    func dequeueReusableHeaderFooterView(withIdentifier identifier: String) -> UITableViewHeaderFooterView?
 }
 
 //MARK: - UITableView
 
 public extension RecyclerView where Self: UITableView {
+    
     public func updateHeights() {
         beginUpdates()
         endUpdates()
@@ -81,48 +50,21 @@ public extension RecyclerView where Self: UITableView {
         }
         endUpdates()
     }
-    
-    public func register<Content, TableViewCell: UITableViewCell>(cell: TableViewCell.Type, for content: Content.Type, assemble: @escaping ((UITableViewCell, Content) -> Void)) {
-        let className = String.string(from: content)
-        register(cell, forCellReuseIdentifier: className)
-        registeredCellsForContentType[className] = Assemble(reuseIdentifier: className, cellType: cell, assembler: assemble)
-    }
-    
-    public func register<Content, TableViewCell: UITableViewCell>(cellReuseIdentifier: String, as cell: TableViewCell.Type, for content: Content.Type, assemble: @escaping ((UITableViewCell, Content) -> Void)) {
-        let className = String.string(from: content)
-        registeredCellsForContentType[className] = Assemble(reuseIdentifier: cellReuseIdentifier, cellType: cell, assembler: assemble)
-    }
-    
-    public func dequeueReusableCell<Content>(for content: Content) -> UITableViewCell? {
-        let className = String.string(from: type(of: content))
-        let assembler = registeredCellsForContentType[className]
-        let cell = dequeueReusableCell(withIdentifier: assembler?.reuseIdentifier ?? className)
-        if let strongCell = cell {
-            assembler?.assemble(cell: strongCell, with: content)
-        }
-        return cell
-    }
-    
-    public func registerHeaderFooter<Content, TableHeaderView: UITableViewHeaderFooterView>(view: TableHeaderView.Type, for content: Content.Type, assemble: @escaping ((TableHeaderView, Content) -> Void)) {
-        let className = String.string(from: content)
-        register(view, forHeaderFooterViewReuseIdentifier: className)
-        registeredHeaderFooterForContentType[className] = AssembleHeaderFooter(reuseIdentifier: className, viewType: view, assembler: assemble)
-    }
-    
-    public func dequeueReusableHeaderFooterView<Content>(for content: Content) -> UITableViewHeaderFooterView? {
-        let className = String.string(from: type(of: content))
-        let assembler = registeredHeaderFooterForContentType[className]
-        let cell = dequeueReusableHeaderFooterView(withIdentifier: assembler?.reuseIdentifier ?? className)
-        if let strongCell = cell {
-            assembler?.assemble(view: strongCell, with: content)
-        }
-        return cell
-    }
 }
 
 //MARK: - UITableViewController
 
 public extension RecyclerView where Self: UITableViewController {
+    
+    public var dataSource: UITableViewDataSource? {
+        set {
+            tableView.dataSource = newValue
+        }
+        get {
+            return tableView.dataSource
+        }
+    }
+    
     public func updateHeights() {
         tableView.beginUpdates()
         tableView.endUpdates()
@@ -151,41 +93,69 @@ public extension RecyclerView where Self: UITableViewController {
         tableView.endUpdates()
     }
     
-    public func register<Content, TableViewCell: UITableViewCell>(cell: TableViewCell.Type, for content: Content.Type, assemble: @escaping ((TableViewCell, Content) -> Void)) where TableViewCell : UITableViewCell {
-        let className = String.string(from: content)
-        tableView.register(cell, forCellReuseIdentifier: className)
-        registeredCellsForContentType[className] = Assemble(reuseIdentifier: className, cellType: cell, assembler: assemble)
+    func register(_ cellClass: AnyClass?, forCellReuseIdentifier identifier: String) {
+        tableView.register(cellClass, forCellReuseIdentifier: identifier)
     }
     
+    func dequeueReusableCell(withIdentifier identifier: String) -> UITableViewCell? {
+        return tableView.dequeueReusableCell(withIdentifier: identifier)
+    }
+    
+    func register(_ aClass: AnyClass?, forHeaderFooterViewReuseIdentifier identifier: String) {
+        tableView.register(aClass, forHeaderFooterViewReuseIdentifier: identifier)
+    }
+    
+    func dequeueReusableHeaderFooterView(withIdentifier identifier: String) -> UITableViewHeaderFooterView? {
+        return tableView.dequeueReusableHeaderFooterView(withIdentifier: identifier)
+    }
+}
+
+// MARK - DEPRECATIONS
+public extension RecyclerView where Self: UITableView {
+    @available(*, deprecated, message: "Moved to SwiftDataProvider")
+    public func register<Content, TableViewCell: UITableViewCell>(cell: TableViewCell.Type, for content: Content.Type, assemble: @escaping ((UITableViewCell, Content) -> Void)) {
+    }
+    
+    @available(*, deprecated, message: "Moved to SwiftDataProvider")
     public func register<Content, TableViewCell: UITableViewCell>(cellReuseIdentifier: String, as cell: TableViewCell.Type, for content: Content.Type, assemble: @escaping ((TableViewCell, Content) -> Void)) {
-        let className = String.string(from: content)
-        registeredCellsForContentType[className] = Assemble(reuseIdentifier: cellReuseIdentifier, cellType: cell, assembler: assemble)
     }
     
+    @available(*, deprecated, message: "Moved to SwiftDataProvider")
     public func dequeueReusableCell<Content>(for content: Content) -> UITableViewCell? {
-        let className = String.string(from: content)
-        let assembler = registeredCellsForContentType[className]
-        let cell = tableView.dequeueReusableCell(withIdentifier: assembler?.reuseIdentifier ?? className)
-        if let strongCell = cell {
-            assembler?.assemble(cell: strongCell, with: content)
-        }
-        return cell
+        return nil
     }
     
+    @available(*, deprecated, message: "Moved to SwiftDataProvider")
     public func registerHeaderFooter<Content, TableHeaderView: UITableViewHeaderFooterView>(view: TableHeaderView.Type, for content: Content.Type, assemble: @escaping ((TableHeaderView, Content) -> Void)) {
-        let className = String.string(from: content)
-        tableView.register(view, forHeaderFooterViewReuseIdentifier: className)
-        registeredHeaderFooterForContentType[className] = AssembleHeaderFooter(reuseIdentifier: className, viewType: view, assembler: assemble)
     }
     
+    @available(*, deprecated, message: "Moved to SwiftDataProvider")
     public func dequeueReusableHeaderFooterView<Content>(for content: Content) -> UITableViewHeaderFooterView? {
-        let className = String.string(from: type(of: content))
-        let assembler = registeredHeaderFooterForContentType[className]
-        let cell = tableView.dequeueReusableHeaderFooterView(withIdentifier: assembler?.reuseIdentifier ?? className)
-        if let strongCell = cell {
-            assembler?.assemble(view: strongCell, with: content)
-        }
-        return cell
+        return nil
+    }
+}
+
+public extension RecyclerView where Self: UITableViewController {
+    @available(*, deprecated, message: "Moved to SwiftDataProvider")
+    public func register<Content, TableViewCell: UITableViewCell>(cell: TableViewCell.Type, for content: Content.Type, assemble: @escaping ((UITableViewCell, Content) -> Void)) {
+    }
+    
+    @available(*, deprecated, message: "Moved to SwiftDataProvider")
+    public func register<Content, TableViewCell: UITableViewCell>(cellReuseIdentifier: String, as cell: TableViewCell.Type, for content: Content.Type, assemble: @escaping ((TableViewCell, Content) -> Void)) {
+    }
+    
+    @available(*, deprecated, message: "Moved to SwiftDataProvider")
+    public func dequeueReusableCell<Content>(for content: Content) -> UITableViewCell? {
+        return nil
+    }
+    
+    @available(*, deprecated, message: "Moved to SwiftDataProvider")
+    public func registerHeaderFooter<Content, TableHeaderView: UITableViewHeaderFooterView>(view: TableHeaderView.Type, for content: Content.Type, assemble: @escaping ((TableHeaderView, Content) -> Void)) {
+    }
+    
+    @available(*, deprecated, message: "Moved to SwiftDataProvider")
+    public func dequeueReusableHeaderFooterView<Content>(for content: Content) -> UITableViewHeaderFooterView? {
+        return nil
     }
 }
 

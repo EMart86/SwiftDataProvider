@@ -10,26 +10,22 @@ import UIKit
 import SwiftDataProvider
 
 class ViewController: UITableViewController, RecyclerView {
-    var registeredHeaderFooterForContentType = [String : AssemblableHeaderFooter]()
-    var registeredCellsForContentType = [String : Assemblable]()
-    
     let viewModel = ViewModel()
-    private var dataProvider: SwiftDataProvider<Void, Void>?
+    private var dataProvider: SwiftDataProvider?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         dataProvider = SwiftDataProvider(recyclerView: self)
         dataProvider?.contentAdapter = viewModel.contentAdapter
-        register(cell: UITableViewCell.self, for: TimeModel.self) { cell, content in
+        dataProvider?.register(cell: UITableViewCell.self, for: TimeModel.self) { cell, content in
             cell.textLabel?.text = content.formattedDate
         }
-        register(cell: UITableViewCell.self, for: RandomNumberModel.self) { cell, content in
+        dataProvider?.register(cell: UITableViewCell.self, for: RandomNumberModel.self) { cell, content in
             cell.textLabel?.text = content.randomNumber
         }
-        register(cellReuseIdentifier: "TestCell", as: TestCell.self, for: TestCell.Content.self) { cell, content in
+        dataProvider?.register(cellReuseIdentifier: "TestCell", as: TestCell.self, for: TestCell.Content.self) { cell, content in
             cell.content = content
         }
-        tableView.dataSource = dataProvider
     }
    
     @IBAction func addItem(_ sender: Any) {
