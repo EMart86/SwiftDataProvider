@@ -39,7 +39,7 @@ SwiftDataProvider is available under the MIT license. See the LICENSE file for m
 
 So, we reviewed our code and rethought of how we could improve and reduce code and there your are:
 
-1) No need for thouse Generics in SwiftDataProvider
+1) No need for those Generics in SwiftDataProvider
 ```swift
 private var swiftDataProvider: SwiftDataProvider?
 ```
