@@ -77,11 +77,11 @@ override func viewDidLoad() {
 
 ### 4) Register cells for reusing and mapping to the content it requires, eg below the initialization of the SwiftDataProvider
 ```swift
-    register(cell: UITableViewCell.self, for: /*Your data model*/.self) { cell, content in
+    swiftDataProvider?.register(cell: UITableViewCell.self, for: /*Your data model*/.self) { cell, content in
         cell.textLabel?.text = content.formattedDate
     }
 
-    register(cellReuseIdentifier: "TestCell", as: TestCell.self, for: TestCell.Content.self) { cell, content in
+    swiftDataProvider?.register(cellReuseIdentifier: "TestCell", as: TestCell.self, for: TestCell.Content.self) { cell, content in
         cell.content = content
     }
 
