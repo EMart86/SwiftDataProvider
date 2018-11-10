@@ -28,6 +28,7 @@ open class ContentProviderAdapter {
         self.sections = sections
         sections.forEach {
             $0.delegate = self
+            $0.clearContext()
         }
     }
     
@@ -44,7 +45,7 @@ open class ContentProviderAdapter {
                     context.reloadRows.formUnion(indexPaths)
                 }
             }
-            $0.element.clear()
+            $0.element.clearContext()
         }
         delegate?.commit(modifications: context)
         context.clear()

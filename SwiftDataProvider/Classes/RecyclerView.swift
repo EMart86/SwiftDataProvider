@@ -9,13 +9,17 @@ import UIKit
 
 public protocol RecyclerView: class {
     var dataSource: UITableViewDataSource? { get set }
+    var delegate: UITableViewDelegate? { get set }
     func updateHeights()
     func update(modifications: CellModifications)
+    func reloadData()
     
     // MARK: - if Recycler View is in UITableView
     func register(_ cellClass: AnyClass?, forCellReuseIdentifier identifier: String)
+    func register(_ nib: UINib?, forCellReuseIdentifier identifier: String)
     func dequeueReusableCell(withIdentifier identifier: String) -> UITableViewCell?
     func register(_ aClass: AnyClass?, forHeaderFooterViewReuseIdentifier identifier: String)
+    func register(_ nib: UINib?, forHeaderFooterViewReuseIdentifier identifier: String)
     func dequeueReusableHeaderFooterView(withIdentifier identifier: String) -> UITableViewHeaderFooterView?
 }
 
@@ -65,6 +69,15 @@ public extension RecyclerView where Self: UITableViewController {
         }
     }
     
+    public var delegate: UITableViewDelegate? {
+        set {
+            tableView.delegate = newValue
+        }
+        get {
+            return tableView.delegate
+        }
+    }
+    
     public func updateHeights() {
         tableView.beginUpdates()
         tableView.endUpdates()
@@ -97,6 +110,10 @@ public extension RecyclerView where Self: UITableViewController {
         tableView.register(cellClass, forCellReuseIdentifier: identifier)
     }
     
+    func register(_ nib: UINib?, forCellReuseIdentifier identifier: String) {
+        tableView.register(nib, forCellReuseIdentifier: identifier)
+    }
+    
     func dequeueReusableCell(withIdentifier identifier: String) -> UITableViewCell? {
         return tableView.dequeueReusableCell(withIdentifier: identifier)
     }
@@ -105,8 +122,16 @@ public extension RecyclerView where Self: UITableViewController {
         tableView.register(aClass, forHeaderFooterViewReuseIdentifier: identifier)
     }
     
+    func register(_ nib: UINib?, forHeaderFooterViewReuseIdentifier identifier: String) {
+        tableView.register(nib, forHeaderFooterViewReuseIdentifier: identifier)
+    }
+    
     func dequeueReusableHeaderFooterView(withIdentifier identifier: String) -> UITableViewHeaderFooterView? {
         return tableView.dequeueReusableHeaderFooterView(withIdentifier: identifier)
+    }
+    
+    func reloadData() {
+        tableView.reloadData()
     }
 }
 
@@ -160,7 +185,7 @@ public extension RecyclerView where Self: UITableViewController {
 }
 
 extension CellModifications.Animation {
-    var rowAnimation: UITableViewRowAnimation {
+    var rowAnimation: UITableView.RowAnimation {
         switch self {
         case .fade:
             return .fade

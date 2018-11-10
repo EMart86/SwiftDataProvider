@@ -23,7 +23,9 @@ public class Modification {
     public func insert(at index: Int) {
         if let _index = delete?.index(of: index) {
             delete?.remove(at: _index)
-            reload?.append(index)
+            var reload = self.reload ?? [Int]()
+            reload.append(index)
+            self.reload = reload
             return
         }
         var insert = self.insert ?? [Int]()

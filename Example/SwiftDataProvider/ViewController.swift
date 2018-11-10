@@ -10,22 +10,27 @@ import UIKit
 import SwiftDataProvider
 
 class ViewController: UITableViewController, RecyclerView {
+    
     let viewModel = ViewModel()
     private var dataProvider: SwiftDataProvider?
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        dataProvider = SwiftDataProvider(recyclerView: self)
-        dataProvider?.contentAdapter = viewModel.contentAdapter
-        dataProvider?.register(cell: UITableViewCell.self, for: TimeModel.self) { cell, content in
+        let dataProvider = SwiftDataProvider(recyclerView: self)
+        dataProvider.register(cell: UITableViewCell.self, for: TimeModel.self) { cell, content in
             cell.textLabel?.text = content.formattedDate
         }
-        dataProvider?.register(cell: UITableViewCell.self, for: RandomNumberModel.self) { cell, content in
+        dataProvider.register(cell: UITableViewCell.self, for: RandomNumberModel.self) { cell, content in
             cell.textLabel?.text = content.randomNumber
         }
-        dataProvider?.register(cellReuseIdentifier: "TestCell", as: TestCell.self, for: TestCell.Content.self) { cell, content in
+        dataProvider.register(cellReuseIdentifier: "TestCell", as: TestCell.self, for: TestCell.Content.self) { cell, content in
             cell.content = content
         }
+        dataProvider.registerHeaderFooter(nib: HeaderView.nib(), as: HeaderView.self, for: HeaderView.Content.self) { header, content in
+            header.content = content
+        }
+        dataProvider.contentAdapter = viewModel.contentAdapter
+        self.dataProvider = dataProvider
     }
    
     @IBAction func addItem(_ sender: Any) {
@@ -38,3 +43,17 @@ class ViewController: UITableViewController, RecyclerView {
     }
 }
 
+class HeaderView: UITableViewHeaderFooterView, XibLoadable {
+    static let xibName = "HeaderView"
+    
+    struct Content {
+        
+    }
+    
+    var content: Content? {
+        didSet {
+            print("")
+        }
+    }
+    
+}

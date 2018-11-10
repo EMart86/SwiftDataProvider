@@ -35,6 +35,33 @@ Martin Eberl, eberl_ma@gmx.at
 SwiftDataProvider is available under the MIT license. See the LICENSE file for more info.
 
 ## What's new in
+
+### 1.6
+
+Bugfix where the system and custom TableHeaderFooter View have not been displayed: we had to intercept UITableView's delegate, because the ```viewForHeaderInSection``` and ```viewForFooterInSection```is only located in there (?). If you would like to be able to use the delegate without breaking the SwiftDataProviders Section Header and Footer display logic, just assign to the delegate before creating the SwiftDataProvider. It will intercept only the methods that ask for the Header- and Footer View and forward any other delegate callback to your logic
+
+```swift
+override func viewDidLoad() {
+    super.viewDidLoad()
+
+    //do assign to the tableviews delegate ALWAY BEFORE creating and assigning
+    //the SwiftDataProvider to the UITableView or UITableViewController, otherwhise
+    //the section header and footer view won't appear, when you handle them within the SwiftDataProvider
+    self.tableViewDelegate = self 
+
+    self.swiftDataProvider = SwiftDataProvider(recyclerView: self)
+
+    //step 4
+}
+```
+
+Added:
+Register Header Footer view with nibs
+``` swift
+    dataProvider.registerHeaderFooter(nib: HeaderView.nib(), as: HeaderView.self, for: HeaderView.HeaderContent.self) { _, _ in }
+}
+```
+
 ### 1.5
 
 So, we reviewed our code and rethought of how we could improve and reduce code and there your are:
@@ -68,7 +95,12 @@ If you have any problems with using this classes, please file an issue. I'd be h
 ```swift
 override func viewDidLoad() {
     super.viewDidLoad()
-
+    
+    //do assign to the tableviews delegate ALWAY BEFORE creating and assigning
+    //the SwiftDataProvider to the UITableView or UITableViewController, otherwhise
+    //the section header and footer view won't appear, when you handle them within the SwiftDataProvider
+    self.tableViewDelegate = self 
+    
     self.swiftDataProvider = SwiftDataProvider(recyclerView: self)
 
     //step 4

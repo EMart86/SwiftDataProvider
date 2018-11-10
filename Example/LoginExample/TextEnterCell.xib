@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14283.14"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="TextEnterCell" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="TextEnterCell" rowHeight="120" id="4m4-Xw-Mch" customClass="TextEnterCell" customModule="LoginExample" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="120"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="4m4-Xw-Mch" id="J7G-cR-B8e">
+                <rect key="frame" x="0.0" y="0.0" width="375" height="119.5"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8YX-Vb-kOY">
+                        <rect key="frame" x="32" y="19" width="311" height="43"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="RVc-44-Yuo">
+                        <rect key="frame" x="32" y="70" width="311" height="22"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="22" id="msW-WK-H2k"/>
+                        </constraints>
+                        <nil key="textColor"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <textInputTraits key="textInputTraits"/>
+                        <connections>
+                            <outlet property="delegate" destination="4m4-Xw-Mch" id="79v-Gx-bgz"/>
+                        </connections>
+                    </textField>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pqI-5R-8Mh">
+                        <rect key="frame" x="32" y="100" width="311" height="1"/>
+                        <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="1" id="kte-tf-FCz"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="8YX-Vb-kOY" firstAttribute="leading" secondItem="J7G-cR-B8e" secondAttribute="leadingMargin" constant="16" id="21G-0K-9pg"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="8YX-Vb-kOY" secondAttribute="trailing" constant="16" id="28F-Do-cBc"/>
+                    <constraint firstItem="RVc-44-Yuo" firstAttribute="trailing" secondItem="8YX-Vb-kOY" secondAttribute="trailing" id="3XS-lq-IT6"/>
+                    <constraint firstItem="pqI-5R-8Mh" firstAttribute="leading" secondItem="RVc-44-Yuo" secondAttribute="leading" id="Gd3-zm-8mm"/>
+                    <constraint firstItem="RVc-44-Yuo" firstAttribute="leading" secondItem="8YX-Vb-kOY" secondAttribute="leading" id="GvK-H4-6Pd"/>
+                    <constraint firstItem="RVc-44-Yuo" firstAttribute="top" secondItem="8YX-Vb-kOY" secondAttribute="bottom" constant="8" id="Hfg-eZ-8hP"/>
+                    <constraint firstAttribute="bottomMargin" secondItem="pqI-5R-8Mh" secondAttribute="bottom" constant="8" id="Ulk-vh-QH6"/>
+                    <constraint firstItem="pqI-5R-8Mh" firstAttribute="trailing" secondItem="RVc-44-Yuo" secondAttribute="trailing" id="clO-iC-1xo"/>
+                    <constraint firstItem="pqI-5R-8Mh" firstAttribute="top" secondItem="RVc-44-Yuo" secondAttribute="bottom" constant="8" id="rij-3w-uWg"/>
+                    <constraint firstItem="8YX-Vb-kOY" firstAttribute="top" secondItem="J7G-cR-B8e" secondAttribute="topMargin" constant="8" id="rtf-lX-WTB"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="label" destination="8YX-Vb-kOY" id="6bv-7b-Fhg"/>
+                <outlet property="separator" destination="pqI-5R-8Mh" id="RHO-NI-OiE"/>
+                <outlet property="textField" destination="RVc-44-Yuo" id="Bso-Dy-QEh"/>
+            </connections>
+        </tableViewCell>
+    </objects>
+</document>

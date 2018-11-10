@@ -19,11 +19,11 @@ enum Type {
             let contentAdapter = DynamicContentProviderAdapter<TimeModel>()
             contentAdapter.sort = { $0 < $1 }
             contentAdapter.sectionContentUpdate = { section in
-                section.header = "\(section.rows.count) Items"
+                section.set(header: "\(section.rows.count) Items")
                 return .reload
             }
             contentAdapter.sectionInitializer = { section in
-                section.header = "\(section.rows.count) Items"
+                section.set(header: "\(section.rows.count) Items")
             }
             contentAdapter.contentSectionizer = { content, sections in
                 guard let last = sections?.last else {
@@ -38,11 +38,23 @@ enum Type {
             }
             return contentAdapter
         case .static:
-            return ContentProviderAdapter()
+            let section = Section()
+            section.set(header: HeaderView.Content())
+            for _ in 0..<3 {
+                switch Int.random(in: 0..<3) {
+                case 1:
+                    section.add(row: RandomNumberModel())
+                case 2:
+                    section.add(row: TestCell.Content(titel: "\(Double.random(in: 0..<12345))"))
+                default:
+                    section.add(row: TimeModel(date: Date(timeIntervalSinceNow: Double.random(in: -30..<30))))
+                }
+            }
+            return ContentProviderAdapter(sections: [section])
         }
     }
     
-    func addEntry(contentAdapter: ContentProviderAdapter) {
+    func addEntry(contentAdapter: ContentProviderAdapter, commit: Bool = true) {
         switch self {
         case .dynamic:
             guard let contentAdapter = contentAdapter as? DynamicContentProviderAdapter<TimeModel> else {
@@ -50,7 +62,8 @@ enum Type {
             }
             contentAdapter.add(TimeModel(date: Date(timeIntervalSinceNow: Double.random(in: -30..<30))))
         case .static:
-            let section = Section(header: "Test")
+            let section = Section()
+            section.set(header: "Test")
             contentAdapter.add(section: section)
             for _ in 0..<3 {
                 switch Int.random(in: 0..<3) {
@@ -63,7 +76,9 @@ enum Type {
                 }
             }
         }
-        contentAdapter.commit()
+        if commit {
+            contentAdapter.commit()
+        }
     }
 }
 
@@ -75,7 +90,6 @@ class ViewModel {
     }
     
     func addNewTimeEntry() {
-        
         type.addEntry(contentAdapter: contentAdapter)
     }
 }

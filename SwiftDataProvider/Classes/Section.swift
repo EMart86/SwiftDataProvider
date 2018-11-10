@@ -12,15 +12,28 @@ protocol SectionDelegate: class {
     func didUpdateRows(for section: Section)
 }
 
+public struct TypeAndObject {
+    public var object: Any
+    public var type: String
+}
+
 open class Section {
-    open var header: Any?
-    open var footer: Any?
+    open var header: TypeAndObject?
+    open var footer: TypeAndObject?
     open var rows: [Any]
     
-    public init(header: Any? = nil, footer: Any? = nil, rows: [Any] = []) {
-        self.header = header
-        self.footer = footer
-        self.rows = rows
+    public init() {
+        self.header = nil
+        self.footer = nil
+        self.rows = []
+    }
+    
+    public func set<Header>(header: Header) {
+        self.header = TypeAndObject(object: header, type: String(describing: type(of: header)))
+    }
+    
+    public func set<Footer>(footer: Footer) {
+        self.footer = TypeAndObject(object: footer, type: String(describing: type(of: footer)))
     }
     
     internal weak var delegate: SectionDelegate?
@@ -49,6 +62,7 @@ open class Section {
     
     open func reload(at index: Int) {
         context.reload(at: index)
+        delegate?.didUpdateRows(for: self)
     }
     
     open func reload<Content: Comparable>(row: Content) {
@@ -67,6 +81,14 @@ open class Section {
         }) as? Content
     }
     
+    open func clear() {
+        rows.enumerated().forEach {
+            context.delete(at: $0.offset)
+        }
+        rows.removeAll()
+        delegate?.didUpdateRows(for: self)
+    }
+    
     internal func indexPaths(for section: Int) -> (reload: [IndexPath]?, delete: [IndexPath]?, insert: [IndexPath]?)? {
         let reload = context.reload?.compactMap { IndexPath(row: $0, section: section) }
         let delete = context.delete?.compactMap { IndexPath(row: $0, section: section) }
@@ -79,7 +101,7 @@ open class Section {
         return (reload: reload, delete: delete, insert: insert)
     }
     
-    open func clear() {
+    internal func clearContext() {
         context.clear()
     }
     
