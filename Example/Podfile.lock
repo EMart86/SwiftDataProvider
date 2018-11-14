@@ -1,5 +1,5 @@
 PODS:
-  - SwiftDataProvider (1.5.0)
+  - SwiftDataProvider (1.7.0)
 
 DEPENDENCIES:
   - SwiftDataProvider (from `../`)
@@ -9,8 +9,8 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  SwiftDataProvider: ee24d2030dd5578f4b9fd552aa1f81fe5aafa69e
+  SwiftDataProvider: 5c131d508a9219e6f36346e931f4c90eb6bf119d
 
-PODFILE CHECKSUM: adbf3826727ecda83a5e6bbadf86139069e698fd
+PODFILE CHECKSUM: 626cd89d1901535c6e2177fe81103699d32a8d6b
 
 COCOAPODS: 1.5.3

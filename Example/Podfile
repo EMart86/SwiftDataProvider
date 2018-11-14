@@ -8,3 +8,7 @@ end
 target 'LoginExample' do
   pod 'SwiftDataProvider', :path => '../'
 end
+
+target 'SelectTimeExample' do
+    pod 'SwiftDataProvider', :path => '../'
+end

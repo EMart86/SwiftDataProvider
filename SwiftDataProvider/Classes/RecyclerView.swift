@@ -34,9 +34,19 @@ public extension RecyclerView where Self: UITableView {
     
     public func update(modifications: CellModifications) {
         beginUpdates()
-        insertRows(at: Array(modifications.insertRows), with: .automatic)
-        deleteRows(at: Array(modifications.deleteRows), with: .automatic)
-        reloadRows(at: Array(modifications.reloadRows), with: .automatic)
+        let insert = modifications.animations(for: Array(modifications.insertRows))
+        for i in insert {
+            insertRows(at: i.value, with: i.key.rowAnimation)
+        }
+        let delete = modifications.animations(for: Array(modifications.deleteRows))
+        for i in delete {
+            deleteRows(at: i.value, with: i.key.rowAnimation)
+        }
+        let reload = modifications.animations(for: Array(modifications.reloadRows))
+        for i in reload {
+            reloadRows(at: i.value, with: i.key.rowAnimation)
+        }
+        
         if let insertSections = modifications.insertSections {
             modifications.animations(for: insertSections).forEach {[weak self] in
                 self?.insertSections(IndexSet($0.value), with: $0.key.rowAnimation)
@@ -85,9 +95,19 @@ public extension RecyclerView where Self: UITableViewController {
     
     public func update(modifications: CellModifications) {
         tableView.beginUpdates()
-        tableView.insertRows(at: Array(modifications.insertRows), with: .automatic)
-        tableView.deleteRows(at: Array(modifications.deleteRows), with: .automatic)
-        tableView.reloadRows(at: Array(modifications.reloadRows), with: .automatic)
+        let insert = modifications.animations(for: Array(modifications.insertRows))
+        for i in insert {
+            tableView.insertRows(at: i.value, with: i.key.rowAnimation)
+        }
+        let delete = modifications.animations(for: Array(modifications.deleteRows))
+        for i in delete {
+            tableView.deleteRows(at: i.value, with: i.key.rowAnimation)
+        }
+        let reload = modifications.animations(for: Array(modifications.reloadRows))
+        for i in reload {
+            tableView.reloadRows(at: i.value, with: i.key.rowAnimation)
+        }
+        
         if let insertSections = modifications.insertSections {
             modifications.animations(for: insertSections).forEach {[weak self] in
                 self?.tableView.insertSections(IndexSet($0.value), with: $0.key.rowAnimation)

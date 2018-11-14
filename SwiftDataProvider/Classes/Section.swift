@@ -39,37 +39,37 @@ open class Section {
     internal weak var delegate: SectionDelegate?
     internal var context = Modification()
     
-    open func add<Content: Comparable>(row: Content) {
+    open func add<Content: Comparable>(row: Content, animation: CellModifications.Animation = .automatic) {
         rows.append(row)
-        context.insert(at: rows.count - 1)
+        context.insert(at: rows.count - 1, animation: animation)
         delegate?.didUpdateRows(for: self)
     }
     
-    open func insert<Content: Comparable>(row: Content, at index: Int) {
+    open func insert<Content: Comparable>(row: Content, at index: Int, animation: CellModifications.Animation = .automatic) {
         rows.insert(row, at: index)
-        context.insert(at: index)
+        context.insert(at: index, animation: animation)
         delegate?.didUpdateRows(for: self)
     }
     
-    open func delete<Content: Comparable>(row: Content) {
+    open func delete<Content: Comparable>(row: Content, animation: CellModifications.Animation = .automatic) {
         guard let index = rows.index(where: { ($0 as? Content) == row } ) else {
             return
         }
         self.rows.remove(at: index)
-        context.delete(at: index)
+        context.delete(at: index, animation: animation)
         delegate?.didUpdateRows(for: self)
     }
     
-    open func reload(at index: Int) {
-        context.reload(at: index)
+    open func reload(at index: Int, animation: CellModifications.Animation = .automatic) {
+        context.reload(at: index, animation: animation)
         delegate?.didUpdateRows(for: self)
     }
     
-    open func reload<Content: Comparable>(row: Content) {
+    open func reload<Content: Comparable>(row: Content, animation: CellModifications.Animation = .automatic) {
         guard let index = rows.index(where: { ($0 as? Content) == row } ) else {
             return
         }
-        reload(at: index)
+        reload(at: index, animation: animation)
     }
     
     open func content<Content>(where closure: @escaping ((Content) -> Bool)) -> Content? {
@@ -89,12 +89,21 @@ open class Section {
         delegate?.didUpdateRows(for: self)
     }
     
-    internal func indexPaths(for section: Int) -> (reload: [IndexPath]?, delete: [IndexPath]?, insert: [IndexPath]?)? {
-        let reload = context.reload?.compactMap { IndexPath(row: $0, section: section) }
-        let delete = context.delete?.compactMap { IndexPath(row: $0, section: section) }
-        let insert = context.insert?.compactMap { IndexPath(row: $0, section: section) }
+    internal func indexPaths(for section: Int) -> (reload: [IndexPath: CellModifications.Animation]?, delete: [IndexPath: CellModifications.Animation]?, insert: [IndexPath: CellModifications.Animation]?)? {
+        var reload = [IndexPath: CellModifications.Animation]()
+        context.reload?.forEach {
+            reload[IndexPath(row: $0, section: section)] = context.animation(for: $0) ?? .automatic
+        }
+        var delete = [IndexPath: CellModifications.Animation]()
+        context.delete?.forEach {
+            delete[IndexPath(row: $0, section: section)] = context.animation(for: $0) ?? .automatic
+        }
+        var insert = [IndexPath: CellModifications.Animation]()
+        context.insert?.forEach {
+            insert[IndexPath(row: $0, section: section)] = context.animation(for: $0) ?? .automatic
+        }
         
-        if reload == nil && delete == nil && insert == nil {
+        if reload.isEmpty && delete.isEmpty && insert.isEmpty {
             return nil
         }
         

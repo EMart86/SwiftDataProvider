@@ -34,9 +34,9 @@ class ViewModel {
         currentType = .register
         section.clear()
         section.set(footer: FooterView.FooterContent(firstButtonTitle: "Login", secondButtonTitle: "Register", delegate: self))
-        section.add(row: TextEnterCell.Content(title: "E-Mail", content: email, isSecure: false, delegate: self))
-        section.add(row: TextEnterCell.Content(title: "Firstname", content: firstName, isSecure: false, delegate: self))
-        section.add(row: TextEnterCell.Content(title: "Lastname", content: lastName, isSecure: false, delegate: self))
+        section.add(row: TextEnterCell.Content(title: "E-Mail", content: email, isSecure: false, delegate: self), animation: .fade)
+        section.add(row: TextEnterCell.Content(title: "Firstname", content: firstName, isSecure: false, delegate: self), animation: .fade)
+        section.add(row: TextEnterCell.Content(title: "Lastname", content: lastName, isSecure: false, delegate: self), animation: .fade)
         contentAdapter.commit()
     }
     
@@ -44,8 +44,8 @@ class ViewModel {
         currentType = .login
         section.clear()
         section.set(footer: FooterView.FooterContent(firstButtonTitle: "Register", secondButtonTitle: "Back to login", delegate: self))
-        section.add(row: TextEnterCell.Content(title: "E-Mail", content: email, isSecure: false, delegate: self))
-        section.add(row: TextEnterCell.Content(title: "Password", content: nil, isSecure: true, delegate: self))
+        section.add(row: TextEnterCell.Content(title: "E-Mail", content: email, isSecure: false, delegate: self), animation: .fade)
+        section.add(row: TextEnterCell.Content(title: "Password", content: nil, isSecure: true, delegate: self), animation: .fade)
         contentAdapter.commit()
     }
 }

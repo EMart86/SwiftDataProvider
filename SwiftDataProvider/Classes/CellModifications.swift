@@ -20,20 +20,24 @@ public class Modification {
         self.insert = insert
     }
     
-    public func insert(at index: Int) {
+    private var indexAnimationMapper = [Int: CellModifications.Animation]()
+    
+    public func insert(at index: Int, animation: CellModifications.Animation = .automatic) {
         if let _index = delete?.index(of: index) {
             delete?.remove(at: _index)
             var reload = self.reload ?? [Int]()
             reload.append(index)
+            indexAnimationMapper[index] = animation
             self.reload = reload
             return
         }
         var insert = self.insert ?? [Int]()
         insert.append(index)
+        indexAnimationMapper[index] = animation
         self.insert = insert
     }
     
-    public func reload(at index: Int) {
+    public func reload(at index: Int, animation: CellModifications.Animation = .automatic) {
         if insert?.contains(index) == true {
             return
         }
@@ -42,10 +46,11 @@ public class Modification {
         }
         var reload = self.reload ?? [Int]()
         reload.append(index)
+        indexAnimationMapper[index] = animation
         self.reload = reload
     }
     
-    public func delete(at index: Int) {
+    public func delete(at index: Int, animation: CellModifications.Animation = .automatic) {
         if let _index = insert?.index(of: index) {
             insert?.remove(at: _index)
         }
@@ -54,6 +59,7 @@ public class Modification {
         }
         var delete = self.delete ?? [Int]()
         delete.append(index)
+        indexAnimationMapper[index] = animation
         self.delete = delete
     }
     
@@ -61,6 +67,10 @@ public class Modification {
         reload = nil
         insert = nil
         delete = nil
+    }
+    
+    public func animation(for index: Int) -> CellModifications.Animation? {
+        return indexAnimationMapper[index]
     }
 }
 
@@ -97,6 +107,13 @@ public class CellModifications {
     }
     
     private var indexAnimationMapper = [Int: Animation]()
+    private var cellAnimationMapper = [IndexPath: Animation]()
+    
+    public func mergeCell(animations: [IndexPath: Animation]) {
+        cellAnimationMapper.merge(animations) { _, new in
+            return new
+        }
+    }
     
     public func animations(for indexSet: IndexSet) -> [Animation: [Int]] {
         var mapper = [Animation: [Int]]()
@@ -105,6 +122,18 @@ public class CellModifications {
                 var indexes = mapper[animation] ?? [Int]()
                 indexes.append(i)
                 mapper[animation] = indexes
+            }
+        }
+        return mapper
+    }
+    
+    public func animations(for indexPaths: [IndexPath]) -> [Animation: [IndexPath]] {
+        var mapper = [Animation: [IndexPath]]()
+        for indexPath in indexPaths {
+            if let animation = cellAnimationMapper[indexPath] {
+                var indexPaths = mapper[animation] ?? [IndexPath]()
+                indexPaths.append(indexPath)
+                mapper[animation] = indexPaths
             }
         }
         return mapper

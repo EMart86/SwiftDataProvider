@@ -141,7 +141,7 @@ open class SwiftDataProvider: NSObject, UITableViewDataSource, UITableViewDelega
         guard let content = item(at: indexPath) else {
             return UITableViewCell()
         }
-        return dequeueReusableCell(for: content, as: String.string(from: content)) ?? UITableViewCell()
+        return dequeueReusableCell(for: content, as: content is String ? "String" : String.string(from: content)) ?? UITableViewCell()
     }
     
     public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -238,11 +238,11 @@ open class SwiftDataProvider: NSObject, UITableViewDataSource, UITableViewDelega
     }
     
     public func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        return tableViewDelegate?.tableView?(tableView, willSelectRowAt: indexPath)
+        return tableViewDelegate?.tableView?(tableView, willSelectRowAt: indexPath) ?? indexPath
     }
     
     public func tableView(_ tableView: UITableView, willDeselectRowAt indexPath: IndexPath) -> IndexPath? {
-        return tableViewDelegate?.tableView?(tableView, willDeselectRowAt: indexPath)
+        return tableViewDelegate?.tableView?(tableView, willDeselectRowAt: indexPath) ?? indexPath
     }
     
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
