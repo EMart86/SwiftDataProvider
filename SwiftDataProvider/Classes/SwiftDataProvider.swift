@@ -192,21 +192,21 @@ open class SwiftDataProvider: NSObject, UITableViewDataSource, UITableViewDelega
     }
     
     public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return tableViewDelegate?.tableView?(tableView, heightForRowAt: indexPath) ?? if #available(iOS 10.0, *) { return UITableView.automaticDimension } else { return UITableViewAutomaticDimension }
+        return tableViewDelegate?.tableView?(tableView, heightForRowAt: indexPath) ?? UITableView.automaticDimension
     }
     
     public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         guard let _ = sectionHeader(at: section) else {
             return 0
         }
-        return tableViewDelegate?.tableView?(tableView, heightForHeaderInSection: section) ?? if #available(iOS 10.0, *) { return UITableView.automaticDimension } else { return UITableViewAutomaticDimension }
+        return tableViewDelegate?.tableView?(tableView, heightForHeaderInSection: section) ?? UITableView.automaticDimension
     }
     
     public func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         guard let _ = sectionFooter(at: section) else {
             return 0
         }
-        return tableViewDelegate?.tableView?(tableView, heightForFooterInSection: section) ?? if #available(iOS 10.0, *) { return UITableView.automaticDimension } else { return UITableViewAutomaticDimension }
+        return tableViewDelegate?.tableView?(tableView, heightForFooterInSection: section) ?? UITableView.automaticDimension
     }
     
     public func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
