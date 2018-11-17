@@ -5,8 +5,8 @@
 [![License](https://img.shields.io/cocoapods/l/SwiftDataProvider.svg?style=flat)](https://cocoapods.org/pods/SwiftDataProvider)
 [![Platform](https://img.shields.io/cocoapods/p/SwiftDataProvider.svg?style=flat)](https://cocoapods.org/pods/SwiftDataProvider)
 
-<img src="Example/LoginExample/LoginExample.gif" width="200" height="359">
-<img src="Example/SelectTimeExample/SelectTimeExample.gif" width="200" height="358">
+<img src="https://github.com/EMart86/SwiftDataProvider/blob/master/Example/LoginExample/LoginExample.gif" width="200" height="359">
+<img src="https://github.com/EMart86/SwiftDataProvider/blob/master/Example/SelectTimeExample/SelectTimeExample.gif" width="200" height="358">
 
 ## Example
 
