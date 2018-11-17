@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/cocoapods/l/SwiftDataProvider.svg?style=flat)](https://cocoapods.org/pods/SwiftDataProvider)
 [![Platform](https://img.shields.io/cocoapods/p/SwiftDataProvider.svg?style=flat)](https://cocoapods.org/pods/SwiftDataProvider)
 
-![Animation](Example/LoginExample/LoginExample.gif){:height="50%" width="50%"}
+<img src="Example/LoginExample/LoginExample.gif" width="200" height="359">
 ![Animation](Example/SelectTimeExample/SelectTimeExample.gif){:height="50%" width="50%"}
 
 ## Example
