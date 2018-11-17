@@ -5,7 +5,10 @@
 [![License](https://img.shields.io/cocoapods/l/SwiftDataProvider.svg?style=flat)](https://cocoapods.org/pods/SwiftDataProvider)
 [![Platform](https://img.shields.io/cocoapods/p/SwiftDataProvider.svg?style=flat)](https://cocoapods.org/pods/SwiftDataProvider)
 
-![Animation](/LoginExample/LoginExample_480.mov)
+<video width="268" height="480" controls>
+    <source src="LoginExample/LoginExample_480.mov" type="video/mp4">
+</video>
+
 ![Animation](/SelectTimeExample/SelectTimeExample_480.mov)
 
 ## Example
