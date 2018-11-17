@@ -5,11 +5,8 @@
 [![License](https://img.shields.io/cocoapods/l/SwiftDataProvider.svg?style=flat)](https://cocoapods.org/pods/SwiftDataProvider)
 [![Platform](https://img.shields.io/cocoapods/p/SwiftDataProvider.svg?style=flat)](https://cocoapods.org/pods/SwiftDataProvider)
 
-<video width="268" height="480" controls>
-    <source src="Example/LoginExample/LoginExample_480.mov" type="video/mp4">
-</video>
-
-![Animation](Example/SelectTimeExample/SelectTimeExample_480.gif)
+![Animation](Example/LoginExample/LoginExample.gif)
+![Animation](Example/SelectTimeExample/SelectTimeExample.gif)
 
 ## Example
 
@@ -20,7 +17,7 @@ To run the example project, clone the repo, and run `pod install` from the Examp
 ## Requirements
 
 iOS 8.0
-XCode 9.4.1
+XCode 10
 Swift 4.1
 
 ## Installation

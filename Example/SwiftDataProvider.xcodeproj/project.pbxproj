@@ -23,7 +23,6 @@
 		5842F69E219CCC1C00DA1A49 /* DateSelectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5842F69D219CCC1C00DA1A49 /* DateSelectionCell.swift */; };
 		5842F69F219CCC3800DA1A49 /* XibLoadable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5864D8E02197284F00FE2371 /* XibLoadable.swift */; };
 		5842F6A1219CCFC800DA1A49 /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5842F6A0219CCFC800DA1A49 /* ViewModel.swift */; };
-		5842F6B521A036CD00DA1A49 /* CHANGELOG.md in Resources */ = {isa = PBXBuildFile; fileRef = 5842F6B421A036CD00DA1A49 /* CHANGELOG.md */; };
 		5864D8DF21971F9500FE2371 /* HeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5864D8DE21971F9500FE2371 /* HeaderView.xib */; };
 		5864D8E12197284F00FE2371 /* XibLoadable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5864D8E02197284F00FE2371 /* XibLoadable.swift */; };
 		58EFDD2A2197486C00FDA3D1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58EFDD292197486C00FDA3D1 /* AppDelegate.swift */; };
@@ -78,7 +77,7 @@
 		5842F69B219CCC0F00DA1A49 /* DateSelectionCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DateSelectionCell.xib; sourceTree = "<group>"; };
 		5842F69D219CCC1C00DA1A49 /* DateSelectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateSelectionCell.swift; sourceTree = "<group>"; };
 		5842F6A0219CCFC800DA1A49 /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
-		5842F6B421A036CD00DA1A49 /* CHANGELOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = "<group>"; };
+		5842F6B621A0510C00DA1A49 /* CHANGELOG.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = CHANGELOG.md; path = ../CHANGELOG.md; sourceTree = "<group>"; };
 		5864D8DE21971F9500FE2371 /* HeaderView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = HeaderView.xib; sourceTree = "<group>"; };
 		5864D8E02197284F00FE2371 /* XibLoadable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XibLoadable.swift; sourceTree = "<group>"; };
 		58EFDD272197486C00FDA3D1 /* LoginExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LoginExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -271,7 +270,7 @@
 			children = (
 				3C78A78B2C1D2C0AED93CFA4 /* SwiftDataProvider.podspec */,
 				F88D40FD28C37C6511254E2F /* README.md */,
-				5842F6B421A036CD00DA1A49 /* CHANGELOG.md */,
+				5842F6B621A0510C00DA1A49 /* CHANGELOG.md */,
 				C29BB8523675FBB6459D8759 /* LICENSE */,
 			);
 			name = "Podspec Metadata";
@@ -452,7 +451,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */,
-				5842F6B521A036CD00DA1A49 /* CHANGELOG.md in Resources */,
 				607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */,
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
 				5864D8DF21971F9500FE2371 /* HeaderView.xib in Resources */,
