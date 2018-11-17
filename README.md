@@ -6,7 +6,7 @@
 [![Platform](https://img.shields.io/cocoapods/p/SwiftDataProvider.svg?style=flat)](https://cocoapods.org/pods/SwiftDataProvider)
 
 <img src="Example/LoginExample/LoginExample.gif" width="200" height="359">
-![Animation](Example/SelectTimeExample/SelectTimeExample.gif){:height="50%" width="50%"}
+<img src="Example/SelectTimeExample/SelectTimeExample.gif" width="200" height="358">
 
 ## Example
 
