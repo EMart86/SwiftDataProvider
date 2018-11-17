@@ -9,7 +9,7 @@
     <source src="Example/LoginExample/LoginExample_480.mov" type="video/mp4">
 </video>
 
-![Animation](Example/SelectTimeExample/SelectTimeExample_480.mov)
+![Animation](Example/SelectTimeExample/SelectTimeExample_480.gif)
 
 ## Example
 
