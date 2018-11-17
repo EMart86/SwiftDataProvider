@@ -5,8 +5,8 @@
 [![License](https://img.shields.io/cocoapods/l/SwiftDataProvider.svg?style=flat)](https://cocoapods.org/pods/SwiftDataProvider)
 [![Platform](https://img.shields.io/cocoapods/p/SwiftDataProvider.svg?style=flat)](https://cocoapods.org/pods/SwiftDataProvider)
 
-![Animation](Example/LoginExample/LoginExample.gif)
-![Animation](Example/SelectTimeExample/SelectTimeExample.gif)
+![Animation](Example/LoginExample/LoginExample.gif | width=300)
+![Animation](Example/SelectTimeExample/SelectTimeExample.gif | width=300)
 
 ## Example
 
