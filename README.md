@@ -6,10 +6,10 @@
 [![Platform](https://img.shields.io/cocoapods/p/SwiftDataProvider.svg?style=flat)](https://cocoapods.org/pods/SwiftDataProvider)
 
 <video width="268" height="480" controls>
-    <source src="LoginExample/LoginExample_480.mov" type="video/mp4">
+    <source src="Example/LoginExample/LoginExample_480.mov" type="video/mp4">
 </video>
 
-![Animation](/SelectTimeExample/SelectTimeExample_480.mov)
+![Animation](Example/SelectTimeExample/SelectTimeExample_480.mov)
 
 ## Example
 
