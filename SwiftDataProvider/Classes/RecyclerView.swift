@@ -25,7 +25,7 @@ public protocol RecyclerView: class {
 
 //MARK: - UITableView
 
-public extension RecyclerView where Self: UITableView {
+extension UITableView: RecyclerView {
     
     public func updateHeights() {
         beginUpdates()

@@ -39,13 +39,13 @@ open class Section {
     internal weak var delegate: SectionDelegate?
     internal var context = Modification()
     
-    open func add<Content: Comparable>(row: Content, animation: CellModifications.Animation = .automatic) {
+    open func add<Content>(row: Content, animation: CellModifications.Animation = .automatic) {
         rows.append(row)
         context.insert(at: rows.count - 1, animation: animation)
         delegate?.didUpdateRows(for: self)
     }
     
-    open func insert<Content: Comparable>(row: Content, at index: Int, animation: CellModifications.Animation = .automatic) {
+    open func insert<Content>(row: Content, at index: Int, animation: CellModifications.Animation = .automatic) {
         rows.insert(row, at: index)
         context.insert(at: index, animation: animation)
         delegate?.didUpdateRows(for: self)
@@ -55,7 +55,11 @@ open class Section {
         guard let index = rows.index(where: { ($0 as? Content) == row } ) else {
             return
         }
-        self.rows.remove(at: index)
+        delete(at: index, animation: animation)
+    }
+    
+    open func delete(at index: Int, animation: CellModifications.Animation = .automatic) {
+        rows.remove(at: index)
         context.delete(at: index, animation: animation)
         delegate?.didUpdateRows(for: self)
     }

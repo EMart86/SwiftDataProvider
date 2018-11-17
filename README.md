@@ -5,6 +5,9 @@
 [![License](https://img.shields.io/cocoapods/l/SwiftDataProvider.svg?style=flat)](https://cocoapods.org/pods/SwiftDataProvider)
 [![Platform](https://img.shields.io/cocoapods/p/SwiftDataProvider.svg?style=flat)](https://cocoapods.org/pods/SwiftDataProvider)
 
+![Animation](/LoginExample/LoginExample_480.mov)
+![Animation](/SelectTimeExample/SelectTimeExample_480.mov)
+
 ## Example
 
 Boilerplate code for TableViews and animated updates is history. Design your TableView with your Models instead of keeping track of all the IndexPaths and IndexSets, nice and easy.
@@ -34,91 +37,6 @@ Martin Eberl, eberl_ma@gmx.at
 
 SwiftDataProvider is available under the MIT license. See the LICENSE file for more info.
 
-## What's new in
-
-### 1.7
-
-Customize your inserted, reloaded or deleted content with given animations.
-Can you imagine the struggle to switch between a login or register on the same screen? Or when you want to show or hide a date picker, when tapping on a cell? Now that struggle has been solved. Remove the cell you want to replace and add or insert them at the specific position.
-```
-func toggleRegisterOrLogin() {
-    section.clear()
-    
-    if isLoginPresent {
-        isLoginPresent = false
-        
-        section.add(row: TextEnterCell.Content(title: "E-Mail", content: email, isSecure: false, delegate: self), animation: .fade)
-        section.add(row: TextEnterCell.Content(title: "First name", content: firstName, isSecure: false, delegate: self), animation: .fade)
-        section.add(row: TextEnterCell.Content(title: "Last name", content: lastName, isSecure: false, delegate: self), animation: .fade)
-        //... any further content that has to be filled
-    } else {
-        isLoginPresent = true
-        
-        section.add(row: TextEnterCell.Content(title: "E-Mail", content: email, isSecure: false, delegate: self), animation: .fade)
-        section.add(row: TextEnterCell.Content(title: "Password", content: "", isSecure: true, delegate: self), animation: .fade)
-    }    
-}
-```
-
-I once was asked, how easy it was to show a text as a cell with this simple library. Now that's pretty easy:
-In the UITableViewController add following lines to your code:
-```
-dataProvider.register(cell: UITableViewCell.self, for: String.self) { cell, content in
-    cell.textLabel?.text = content
-}
-```
-Now add a string to your section:
-```
-section.add("Hello World")
-```
-We remove pain for you! Have fun(c)!
-
-### 1.6
-
-Bugfix where the system and custom TableHeaderFooter View have not been displayed: we had to intercept UITableView's delegate, because the ```viewForHeaderInSection``` and ```viewForFooterInSection```is only located in there (?). If you would like to be able to use the delegate without breaking the SwiftDataProviders Section Header and Footer display logic, just assign to the delegate before creating the SwiftDataProvider. It will intercept only the methods that ask for the Header- and Footer View and forward any other delegate callback to your logic
-
-```swift
-override func viewDidLoad() {
-    super.viewDidLoad()
-
-    //do assign to the tableviews delegate ALWAY BEFORE creating and assigning
-    //the SwiftDataProvider to the UITableView or UITableViewController, otherwhise
-    //the section header and footer view won't appear, when you handle them within the SwiftDataProvider
-    self.tableViewDelegate = self 
-
-    self.swiftDataProvider = SwiftDataProvider(recyclerView: self)
-
-    //step 4
-}
-```
-
-Added:
-Register Header Footer view with nibs
-``` swift
-    dataProvider.registerHeaderFooter(nib: HeaderView.nib(), as: HeaderView.self, for: HeaderView.HeaderContent.self) { _, _ in }
-}
-```
-
-### 1.5
-
-So, we reviewed our code and rethought of how we could improve and reduce code and there your are:
-
-1) No need for those Generics in SwiftDataProvider
-```swift
-private var swiftDataProvider: SwiftDataProvider?
-```
-2) No need to explicitly set the swiftDataProvider as the dataSource (we do that implicitly)
-```swift
-//tableView.dataSource = swiftDataProvider
-```
-3) No need to explicitly set the swiftDataProvider as the dataSource (we do that implicitly)
-```swift
-//tableView.dataSource = swiftDataProvider
-```
-4) DEPRECATIONS: Every ```register(::)``` methods have now been moved to SwiftDataProvider (due to code simplifying)
-
-If you have any problems with using this classes, please file an issue. I'd be happy with every feedback/codereview!
-
 ## Usage
 
 ### 1) Implement UITableViewController or UITableView with the  `RecyclerView` protocol
@@ -146,6 +64,10 @@ override func viewDidLoad() {
 
 ### 4) Register cells for reusing and mapping to the content it requires, eg below the initialization of the SwiftDataProvider. **Use unique names for your data models!**
 ```swift
+    swiftDataProvider?.register(cell: UITableViewCell.self, for: String.self) { cell, content in
+        cell.textLabel?.text = content
+    }
+
     swiftDataProvider?.register(cell: UITableViewCell.self, for: /*Your data model*/.self) { cell, content in
         cell.textLabel?.text = content.formattedDate
     }
