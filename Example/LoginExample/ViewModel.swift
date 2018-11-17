@@ -42,7 +42,7 @@ class ViewModel {
     
     func onChangeToLoginClicked() {
         currentType = .login
-        section.clear()
+        section.clear(animation: .none)
         section.set(footer: FooterView.FooterContent(firstButtonTitle: "Register", secondButtonTitle: "Back to login", delegate: self))
         section.add(row: TextEnterCell.Content(title: "E-Mail", content: email, isSecure: false, delegate: self), animation: .fade)
         section.add(row: TextEnterCell.Content(title: "Password", content: nil, isSecure: true, delegate: self), animation: .fade)

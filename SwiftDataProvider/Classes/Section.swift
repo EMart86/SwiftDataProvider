@@ -81,9 +81,9 @@ open class Section {
         }) as? Content
     }
     
-    open func clear() {
+    open func clear(animation: CellModifications.Animation = .automatic) {
         rows.enumerated().forEach {
-            context.delete(at: $0.offset)
+            context.delete(at: $0.offset, animation: animation)
         }
         rows.removeAll()
         delegate?.didUpdateRows(for: self)
