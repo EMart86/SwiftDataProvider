@@ -14,15 +14,10 @@ final class DateSelectionCell: UITableViewCell, XibLoadable {
     @IBOutlet weak var picker: UIDatePicker!
     var content: Content?
     
-    struct Content: Comparable {
-        static func < (lhs: DateSelectionCell.Content, rhs: DateSelectionCell.Content) -> Bool {
-            return false
+    class Content {
+        init(callback: @escaping (Date) -> Void) {
+            self.callback = callback
         }
-        
-        static func == (lhs: DateSelectionCell.Content, rhs: DateSelectionCell.Content) -> Bool {
-            return true
-        }
-        
         let callback: (Date) -> Void
     }
     

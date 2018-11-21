@@ -13,7 +13,7 @@ extension String {
         if let range = string.range(of: "(") {
             return String(string[0..<range.lowerBound.encodedOffset])
         } else if let range = string.range(of: ".", options: .backwards) {
-            return String(string[range])
+            return String(string[range.upperBound..<string.endIndex])
         } else {
             return string
         }
