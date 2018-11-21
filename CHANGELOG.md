@@ -1,5 +1,13 @@
 ## What's new in
 
+### 1.8.2
+
+Fix: class models can't be used for dequeuing a cell
+
+### 1.8.1
+
+Update Gifs
+
 ### 1.8
 
 Remove necessaty of compareable porotocol used for inserting or delete of contents in the section.
