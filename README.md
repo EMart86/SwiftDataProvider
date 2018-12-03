@@ -96,7 +96,7 @@ struct ViewModel {
     init() {
         //Use a string or a model, the string uses the default header view, the
         //model requires you to provide a section header view
-        section.header = "" 
+        section.set(header: "") 
         contentAdapter.add(section: section)
         
         //use automatically update if you'd like the table view 
@@ -136,7 +136,7 @@ struct ViewModel {
         contentAdapter.sectionContentUpdate = { section in
             //Update sectin content whenever a new row has been added
             //use string to show the default section header view or a model, to use a custom view
-            section.header = "\(section.rows.count) Items" 
+            section.set(header: "\(section.rows.count) Items")
             
             //action to be used after a section update has performed (.none or .reload)
             return .reload 
@@ -150,7 +150,7 @@ struct ViewModel {
         contentAdapter.sectionInitializer = { section in
             //Initialize sectin content the first time, a new Section has been created
             //use string to show the default section header view or a model, to use a custom view
-            section.header = "\(section.rows.count) Items" 
+            section.set(header: "\(section.rows.count) Items")
         }
         
         contentAdapter.contentSectionizer = { content, sections in
