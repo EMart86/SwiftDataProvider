@@ -1,6 +1,6 @@
 ## What's new in
 
-### 1.8.3
+### 1.9.0
 
 * Added .reload(), because you sometimes want to update the recycler view without animations
 * You can't access to the header or footer of the section directly anymore. Set the header with section.set(header: <Any type or model>) or the footer with section.set(footer: <Any type or model>)
