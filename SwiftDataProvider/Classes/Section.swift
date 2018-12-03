@@ -18,8 +18,8 @@ public struct TypeAndObject {
 }
 
 open class Section {
-    open var header: TypeAndObject?
-    open var footer: TypeAndObject?
+    internal var header: TypeAndObject?
+    internal var footer: TypeAndObject?
     open var rows: [Any]
     
     public init() {
@@ -76,7 +76,7 @@ open class Section {
         reload(at: index, animation: animation)
     }
     
-    open func content<Content>(where closure: @escaping ((Content) -> Bool)) -> Content? {
+    open func content<Content>(where closure: ((Content) -> Bool)) -> Content? {
         return rows.first(where: { content in
             guard let content = content as? Content else {
                 return false
