@@ -337,4 +337,8 @@ extension SwiftDataProvider: ContentProviderAdapterDelegate {
     public func commit(modifications: CellModifications) {
         recyclerView?.update(modifications: modifications)
     }
+    
+    public func reload() {
+        recyclerView?.reloadData()
+    }
 }
