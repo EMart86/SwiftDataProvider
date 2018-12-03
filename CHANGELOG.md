@@ -1,5 +1,10 @@
 ## What's new in
 
+### 1.8.3
+
+* Added .reload(), because you sometimes want to update the recycler view without animations
+* You can't access to the header or footer of the section directly anymore. Set the header with section.set(header: <Any type or model>) or the footer with section.set(footer: <Any type or model>)
+
 ### 1.8.2
 
 Fix: class models can't be used for dequeuing a cell
