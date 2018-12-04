@@ -99,7 +99,7 @@ open class ContentProviderAdapter {
     
     // MARK: - private
     
-    fileprivate func updateRows(for section: Section) {}
+    internal func updateRows(for section: Section) {}
     
     fileprivate func index(of section: Section) -> Int? {
         return sections.index(where: { section === $0 })
