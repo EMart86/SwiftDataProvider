@@ -1,5 +1,9 @@
 ## What's new in
 
+### 1.9.1
+
+* fixes where DynamicContentProviderAdapter has not been exposed
+
 ### 1.9.0
 
 * Added .reload(), because you sometimes want to update the recycler view without animations
