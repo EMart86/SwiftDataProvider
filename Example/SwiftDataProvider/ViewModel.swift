@@ -26,15 +26,22 @@ enum Type {
                 section.set(header: "\(section.rows.count) Items")
             }
             contentAdapter.contentSectionizer = { content, sections in
-                guard let last = sections?.last else {
-                    return .new
+                guard let sections = sections else {
+                    return .append
                 }
-                let rows = last.rows.compactMap { $0 as? TimeModel }
-                if let timeInterval = rows.first?.date.timeIntervalSince(content.date),
-                    timeInterval < -60  {
-                    return .new
+                guard let result = sections.first(where: { section in
+                    let rows = section.rows.compactMap { $0 as? TimeModel }
+                    if let timeInterval = rows.first?.date.timeIntervalSince(content.date),
+                        timeInterval > -60, timeInterval < 0  {
+                        return true
+                    }
+                    return false
+                }), let index = sections.firstIndex(where: { section in
+                    return section === result
+                }) else {
+                    return .insert(Int.max)
                 }
-                return .use((sections?.count ?? 1) - 1)
+                return .use(index)
             }
             return contentAdapter
         case .static:
@@ -84,7 +91,7 @@ enum Type {
 
 class ViewModel {
     let contentAdapter: ContentProviderAdapter
-    let type: Type = .static
+    let type: Type = .dynamic
     init() {
         contentAdapter = type.initialize
     }

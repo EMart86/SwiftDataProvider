@@ -1,5 +1,10 @@
 ## What's new in
 
+### 1.10.0
+
+* provide section sort algorythm in dynamic content provider adapter
+** use append, insert(<section index>) or use(<section index>) in the section 
+
 ### 1.9.1
 
 * fixes where DynamicContentProviderAdapter has not been exposed

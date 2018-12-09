@@ -65,10 +65,11 @@ open class ContentProviderAdapter {
     }
     
     open func insert(section: Section, at index: Int) {
-        sections.insert(section, at: index)
+        let correctedIndex = min(sections.endIndex, index)
+        sections.insert(section, at: correctedIndex)
         section.delegate = self
         sectionInitializer?(section)
-        context.insertSection(at: index)
+        context.insertSection(at: correctedIndex)
         
         commitIfAutoCommitIsEnabled()
     }

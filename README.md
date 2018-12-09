@@ -157,14 +157,14 @@ struct ViewModel {
             //Sectionize the content
             //return .new or .use(index of the section) to create a new section or use the given section
             guard let last = sections?.last else {
-                return .new
+                return .append
             }
             
             //Here i'm filtering the row
             //if the model to be added into a section is "older" than a minute, a new section will be created, otherwhise use the latest section
             let rows = last.rows.compactMap { $0 as? TimeModel }
             if let timeInterval = rows.first?.date.timeIntervalSince(content.date), timeInterval < -60 {
-                return .new
+                return .insert(0)
             }
             return .use((sections?.count ?? 1) - 1)
         }

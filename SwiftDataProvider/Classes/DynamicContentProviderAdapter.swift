@@ -10,7 +10,8 @@ import Foundation
 open class DynamicContentProviderAdapter<Content: Comparable>: ContentProviderAdapter {
     
     public enum Operation {
-        case new
+        case append
+        case insert(Int)
         case use(Int)
     }
     
@@ -29,9 +30,13 @@ open class DynamicContentProviderAdapter<Content: Comparable>: ContentProviderAd
             return firstSection
         }
         switch (contentSectionizer(content, sections)) {
-        case .new:
+        case .append:
             let section = Section()
             add(section: section)
+            return section
+        case .insert(let index):
+            let section = Section()
+            insert(section: section, at: index)
             return section
         case .use(let sectionAtIndex):
             return sections[sectionAtIndex]
