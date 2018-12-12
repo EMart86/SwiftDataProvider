@@ -27,7 +27,7 @@ struct RandomNumberModel: BaseCompareable {
     }
 }
 
-struct TimeModel: BaseCompareable {
+@objc class TimeModel: NSObject, BaseCompareable {
     
     static func == (lhs: TimeModel, rhs: TimeModel) -> Bool {
         return lhs.date == rhs.date
@@ -37,7 +37,7 @@ struct TimeModel: BaseCompareable {
         return lhs.date < rhs.date
     }
     
-    let date: Date
+    @objc dynamic let date: Date
     
     init(date: Date = Date()) {
         self.date = date

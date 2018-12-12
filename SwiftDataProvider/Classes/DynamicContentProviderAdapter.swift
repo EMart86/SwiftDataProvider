@@ -10,13 +10,13 @@ import Foundation
 open class DynamicContentProviderAdapter<Content: Comparable>: ContentProviderAdapter {
     
     public enum Operation {
-        case append
-        case insert(Int)
+        case new([String: Any]?)
         case use(Int)
     }
     
     private var contentArray: [Content] = []
     public var sort: ((Content , Content) -> Bool)?
+    public var sortSections: ((Section , Section) -> Bool)?
     public var contentSectionizer: ((Content, [Section]?) -> Operation)?
     
     private lazy var firstSection: Section = {
@@ -30,21 +30,34 @@ open class DynamicContentProviderAdapter<Content: Comparable>: ContentProviderAd
             return firstSection
         }
         switch (contentSectionizer(content, sections)) {
-        case .append:
-            let section = Section()
-            add(section: section)
-            return section
-        case .insert(let index):
-            let section = Section()
-            insert(section: section, at: index)
+        case .new(let context):
+            let section = Section(context: context)
+            add(content: content, to: section)
+            var sections = self.sections
+            sections.append(section)
+            
+            if let sortSections = sortSections {
+                let sortedSections = sections.sorted(by: sortSections)
+                if let index = sortedSections.index(where: {
+                    section === $0
+                }) {
+                    insert(section: section, at: index, context: context)
+                } else {
+                    add(section: section, context: context)
+                }
+            } else {
+                add(section: section, context: context)
+            }
+            commit()
             return section
         case .use(let sectionAtIndex):
-            return sections[sectionAtIndex]
+            let section = sections[sectionAtIndex]
+            add(content: content, to: section)
+            return section
         }
     }
     
-    public func add(_ content: Content) {
-        let section = self.section(for: content)
+    private func add(content: Content, to section: Section) {
         var rows = section.rows.compactMap { $0 as? Content }
         rows.append(content)
         if let sort = sort {
@@ -59,6 +72,10 @@ open class DynamicContentProviderAdapter<Content: Comparable>: ContentProviderAd
         section.insert(row: content, at: index)
     }
     
+    public func add(_ content: Content) {
+        _ = section(for: content)
+    }
+    
     public func remove(_ content: Content) {
         guard let index = contentArray.index(of: content) else {
             return
@@ -71,7 +88,7 @@ open class DynamicContentProviderAdapter<Content: Comparable>: ContentProviderAd
     
     override func updateRows(for section: Section) {
         if let sectionContentUpdate = sectionContentUpdate {
-            switch (sectionContentUpdate(section)) {
+            switch (sectionContentUpdate(section, section.context)) {
             case .nothing:
                 break
             case .reload:

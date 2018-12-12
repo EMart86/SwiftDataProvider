@@ -133,13 +133,22 @@ struct ViewModel {
 
     init() {
         contentAdapter.sort = { $0 < $1 }
-        contentAdapter.sectionContentUpdate = { section in
+        contentAdapter.sectionContentUpdate = { section , context in
             //Update sectin content whenever a new row has been added
             //use string to show the default section header view or a model, to use a custom view
             section.set(header: "\(section.rows.count) Items")
             
             //action to be used after a section update has performed (.none or .reload)
             return .reload 
+        }
+        
+        //use section sorter, to sort the sections by your given algorythm
+        contentAdapter.sortSections = { firstSection, secondSection
+            guard let first = firstSection.rows.first(where: {firstSection is TimeModel}) as? TimeModel,
+                let second = secondSection.rows.first(where: {firstSection is TimeModel}) as? TimeModel else {
+                    return firstSection.rows.contains(where: { firstSection is TimeModel })
+            }
+            return first.date > second.date
         }
         
         //use automatically update if you'd like the table view 
@@ -156,17 +165,21 @@ struct ViewModel {
         contentAdapter.contentSectionizer = { content, sections in
             //Sectionize the content
             //return .new or .use(index of the section) to create a new section or use the given section
+            
+            let context = [Section.Keys.predicate: NSPredicate(format: "...")] //you can specify a predicate here, so you can easily categorize the      content to the correct session
             guard let last = sections?.last else {
-                return .append
+                return .new(context)
             }
             
             //Here i'm filtering the row
-            //if the model to be added into a section is "older" than a minute, a new section will be created, otherwhise use the latest section
-            let rows = last.rows.compactMap { $0 as? TimeModel }
-            if let timeInterval = rows.first?.date.timeIntervalSince(content.date), timeInterval < -60 {
-                return .insert(0)
+            //if the model to be added into a section meets the given predicate of a section
+            (see *let context = [Section.Keys.predicate: NSPredicate(format: "...")]*) 
+            if let index = sections.firstIndex(where: { section in
+                return section.meetsPredicate(content: content) ?? false
+            }) {
+                return .use(index)
             }
-            return .use((sections?.count ?? 1) - 1)
+            return .new(context)
         }
     }
 

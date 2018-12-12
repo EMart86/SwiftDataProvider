@@ -18,11 +18,18 @@ public struct TypeAndObject {
 }
 
 open class Section {
+    public struct Keys {
+        public static let predicate = "Section.Key.Predicate"
+    }
+    
     internal var header: TypeAndObject?
     internal var footer: TypeAndObject?
     open var rows: [Any]
+    open var insertPredicate: NSPredicate?
+    public let context: [String: Any]?
     
-    public init() {
+    public init(context: [String: Any]? = nil) {
+        self.context = context
         self.header = nil
         self.footer = nil
         self.rows = []
@@ -37,17 +44,24 @@ open class Section {
     }
     
     internal weak var delegate: SectionDelegate?
-    internal var context = Modification()
+    internal var modification = Modification()
     
     open func add<Content>(row: Content, animation: CellModifications.Animation = .automatic) {
+        guard insertPredicate == nil || meetsPredicate(content: row).isTrue else {
+            return
+        }
         rows.append(row)
-        context.insert(at: rows.count - 1, animation: animation)
+        modification.insert(at: rows.count - 1, animation: animation)
         delegate?.didUpdateRows(for: self)
     }
     
     open func insert<Content>(row: Content, at index: Int, animation: CellModifications.Animation = .automatic) {
+        guard insertPredicate == nil || meetsPredicate(content: row).isFalse else {
+            return
+        }
         rows.insert(row, at: index)
-        context.insert(at: index, animation: animation)
+        modification.insert(at: index, animation: animation)
+        
         delegate?.didUpdateRows(for: self)
     }
     
@@ -60,12 +74,12 @@ open class Section {
     
     open func delete(at index: Int, animation: CellModifications.Animation = .automatic) {
         rows.remove(at: index)
-        context.delete(at: index, animation: animation)
+        modification.delete(at: index, animation: animation)
         delegate?.didUpdateRows(for: self)
     }
     
     open func reload(at index: Int, animation: CellModifications.Animation = .automatic) {
-        context.reload(at: index, animation: animation)
+        modification.reload(at: index, animation: animation)
         delegate?.didUpdateRows(for: self)
     }
     
@@ -87,24 +101,28 @@ open class Section {
     
     open func clear(animation: CellModifications.Animation = .automatic) {
         rows.enumerated().forEach {
-            context.delete(at: $0.offset, animation: animation)
+            modification.delete(at: $0.offset, animation: animation)
         }
         rows.removeAll()
         delegate?.didUpdateRows(for: self)
     }
     
+    open func meetsPredicate(content: Any) -> Bool? {
+        return insertPredicate?.evaluate(with: content)
+    }
+    
     internal func indexPaths(for section: Int) -> (reload: [IndexPath: CellModifications.Animation]?, delete: [IndexPath: CellModifications.Animation]?, insert: [IndexPath: CellModifications.Animation]?)? {
         var reload = [IndexPath: CellModifications.Animation]()
-        context.reload?.forEach {
-            reload[IndexPath(row: $0, section: section)] = context.animation(for: $0) ?? .automatic
+        modification.reload?.forEach {
+            reload[IndexPath(row: $0, section: section)] = modification.animation(for: $0) ?? .automatic
         }
         var delete = [IndexPath: CellModifications.Animation]()
-        context.delete?.forEach {
-            delete[IndexPath(row: $0, section: section)] = context.animation(for: $0) ?? .automatic
+        modification.delete?.forEach {
+            delete[IndexPath(row: $0, section: section)] = modification.animation(for: $0) ?? .automatic
         }
         var insert = [IndexPath: CellModifications.Animation]()
-        context.insert?.forEach {
-            insert[IndexPath(row: $0, section: section)] = context.animation(for: $0) ?? .automatic
+        modification.insert?.forEach {
+            insert[IndexPath(row: $0, section: section)] = modification.animation(for: $0) ?? .automatic
         }
         
         if reload.isEmpty && delete.isEmpty && insert.isEmpty {
@@ -114,8 +132,8 @@ open class Section {
         return (reload: reload, delete: delete, insert: insert)
     }
     
-    internal func clearContext() {
-        context.clear()
+    internal func clearModification() {
+        modification.clear()
     }
     
     open func setNeedsUpdate(_ needsUpdate: Bool) {

@@ -21,15 +21,15 @@ open class ContentProviderAdapter {
     public internal(set) var sections: [Section]
     fileprivate let context = CellModifications()
     public weak var delegate: ContentProviderAdapterDelegate?
-    public var sectionContentUpdate: ((Section) -> SectionOperation)?
-    public var sectionInitializer: ((Section) -> Void)?
+    public var sectionContentUpdate: ((Section, [String: Any]?) -> SectionOperation)?
+    public var sectionInitializer: ((Section, Int, [String: Any]?) -> Void)?
     public var isAutoCommitEnabled = false
     
     public init(sections: [Section] = [Section]()) {
         self.sections = sections
         sections.forEach {
             $0.delegate = self
-            $0.clearContext()
+            $0.clearModification()
         }
     }
     
@@ -49,27 +49,29 @@ open class ContentProviderAdapter {
                     context.mergeCell(animations: indexPaths)
                 }
             }
-            $0.element.clearContext()
+            $0.element.clearModification()
         }
         delegate?.commit(modifications: context)
         context.clear()
     }
     
-    open func add(section: Section) {
+    open func add(section: Section, context: [String: Any]? = nil) {
         sections.append(section)
+        section.insertPredicate = context?[Section.Keys.predicate] as? NSPredicate
         section.delegate = self
-        sectionInitializer?(section)
-        context.insertSection(at: sections.count - 1)
+        sectionInitializer?(section, sections.endIndex, context)
+        self.context.insertSection(at: sections.count - 1)
         
         commitIfAutoCommitIsEnabled()
     }
     
-    open func insert(section: Section, at index: Int) {
+    open func insert(section: Section, at index: Int, context: [String: Any]? = nil) {
         let correctedIndex = min(sections.endIndex, index)
         sections.insert(section, at: correctedIndex)
+        section.insertPredicate = context?[Section.Keys.predicate] as? NSPredicate
         section.delegate = self
-        sectionInitializer?(section)
-        context.insertSection(at: correctedIndex)
+        sectionInitializer?(section, correctedIndex, context)
+        self.context.insertSection(at: correctedIndex)
         
         commitIfAutoCommitIsEnabled()
     }

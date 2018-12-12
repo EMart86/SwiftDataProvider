@@ -1,5 +1,47 @@
 ## What's new in
 
+### 1.11.0
+
+* provide section sorter, because it is easiert to provide a sorting algorythm than do can calculation the position in the ```contentSectionizer``` closure.
+```
+contentAdapter.sortSections = { firstSection, secondSection
+    guard let first = firstSection.rows.first(where: {firstSection is TimeModel}) as? TimeModel,
+        let second = secondSection.rows.first(where: {firstSection is TimeModel}) as? TimeModel else {
+            return firstSection.rows.contains(where: { firstSection is TimeModel })
+        }
+    return first.date > second.date
+}
+```
+* revert contentSectionizer: you should eighter return ```.new([String: Any])``` or ```.use```
+** provide a context within ```.new(...)", this will help you in any further sorting or updating algorithm
+
+* use predicate in section context to decide wheter the content applies to the section. To set the preducate use a dictionary and provide the key ```Section.Keys.predicate``` with an NSPredicate Object in the contentSectionizer closure. You can also provide any other key-value pair in that context that you can use within the ```sectionInitializer``` and ```sectionContentUpdate``` colsures.
+
+```
+let context = [Section.Keys.predicate: NSPredicate(block: { content, _ in
+    guard let content = content as? TimeModel else {
+        return false
+    }
+    return content.date > start && content.date < end
+}), 
+    "Title": "\(calendar.component(.weekOfYear, from: start)) \(calendar.component(.year, from: end))"] as [String : Any]
+
+...
+
+return .new(context)
+```
+Now to check wheter a new content meets the predicate of any section, use:
+```
+if let index = sections.firstIndex(where: { section in
+    return section.meetsPredicate(content: content) ?? false
+}) {
+    return .use(index)
+}
+return .new(context)
+```
+
+Be aware: if you provide a predicate for the section, it affects the ```section.add(row: ...)``` and ```section.insert(row: ..., at: index)``` methods aswell, because they validate if the content meets the predicate.
+
 ### 1.10.0
 
 * provide section sort algorythm in dynamic content provider adapter

@@ -17,31 +17,49 @@ enum Type {
         switch self {
         case .dynamic:
             let contentAdapter = DynamicContentProviderAdapter<TimeModel>()
-            contentAdapter.sort = { $0 < $1 }
-            contentAdapter.sectionContentUpdate = { section in
-                section.set(header: "\(section.rows.count) Items")
-                return .reload
+            contentAdapter.sort = { $0 > $1 }
+            contentAdapter.sortSections = {
+                guard let first = $0.rows.first(where: {$0 is TimeModel}) as? TimeModel,
+                    let second = $1.rows.first(where: {$0 is TimeModel}) as? TimeModel else {
+                    return $0.rows.contains(where: { $0 is TimeModel })
+                }
+                return first.date > second.date
             }
-            contentAdapter.sectionInitializer = { section in
-                section.set(header: "\(section.rows.count) Items")
+//            contentAdapter.sectionContentUpdate = { section, context in
+//                guard let content = context?["Title"] as? String else {
+//                    return .nothing
+//                }
+//                section.set(header: content)
+//                return .reload
+//            }
+            contentAdapter.sectionInitializer = { section, _, context in
+                guard let content = context?["Title"] as? String else {
+                    return
+                }
+                section.set(header: content)
             }
             contentAdapter.contentSectionizer = { content, sections in
-                guard let sections = sections else {
-                    return .append
+                let calendar = Calendar.current
+                let components = calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: content.date)
+                guard let start = calendar.date(from: components),
+                    let end = calendar.date(byAdding: .day, value: 7, to: start) else {
+                        return .new(nil)
                 }
-                guard let result = sections.first(where: { section in
-                    let rows = section.rows.compactMap { $0 as? TimeModel }
-                    if let timeInterval = rows.first?.date.timeIntervalSince(content.date),
-                        timeInterval > -60, timeInterval < 0  {
-                        return true
+                let context = [Section.Keys.predicate: NSPredicate(block: { content, _ in
+                    guard let content = content as? TimeModel else {
+                        return false
                     }
-                    return false
-                }), let index = sections.firstIndex(where: { section in
-                    return section === result
-                }) else {
-                    return .insert(Int.max)
+                    return content.date > start && content.date < end
+                }), "Title": "\(calendar.component(.weekOfYear, from: start)) \(calendar.component(.year, from: end))"] as [String : Any]
+                guard let sections = sections else {
+                    return .new(context)
                 }
-                return .use(index)
+                if let index = sections.firstIndex(where: { section in
+                    return section.meetsPredicate(content: content) ?? false
+                }) {
+                    return .use(index)
+                }
+                return .new(context)
             }
             return contentAdapter
         case .static:
@@ -67,7 +85,8 @@ enum Type {
             guard let contentAdapter = contentAdapter as? DynamicContentProviderAdapter<TimeModel> else {
                 return
             }
-            contentAdapter.add(TimeModel(date: Date(timeIntervalSinceNow: Double.random(in: -30..<30))))
+            let dateInterval: TimeInterval = 60 * 60 * 24 * 7
+            contentAdapter.add(TimeModel(date: Date(timeIntervalSinceNow: Double.random(in: dateInterval..<dateInterval))))
         case .static:
             let section = Section()
             section.set(header: "Test")

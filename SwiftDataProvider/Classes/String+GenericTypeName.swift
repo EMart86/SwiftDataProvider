@@ -12,6 +12,9 @@ extension String {
         let string = String(describing: type)
         if let range = string.range(of: "(") {
             return String(string[0..<range.lowerBound.encodedOffset])
+        } else if let range = string.range(of: ".", options: .backwards),
+            let semicollonRange = string.range(of: ":", options: .backwards) {
+            return String(string[range.upperBound..<semicollonRange.lowerBound])
         } else if let range = string.range(of: ".", options: .backwards) {
             return String(string[range.upperBound..<string.endIndex])
         } else {
