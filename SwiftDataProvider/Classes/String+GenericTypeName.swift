@@ -11,7 +11,7 @@ extension String {
     internal static func string<T>(from type: T) -> String {
         let string = String(describing: type)
         if string.hasPrefix("<"), let range = string.range(of: ":") {
-            return String(string[1..<range.lowerBound.encodedOffset])
+            return String.string(from: String(string[1..<range.lowerBound.encodedOffset]))
         } else if let range = string.range(of: "(") {
             return String(string[0..<range.lowerBound.encodedOffset])
         } else if let range = string.range(of: ".", options: .backwards),

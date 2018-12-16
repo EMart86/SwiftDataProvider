@@ -1,6 +1,10 @@
 ## What's new in
 
-### 1.11.1
+### 1.11.2
+
+* create further testcases
+
+### 1.11.1 
 
 * fix NSObject classes couldn't be inferred correctly as Reuseable Types
 ** added Testcase for this

@@ -26,7 +26,8 @@ class StringsTest: XCTestCase {
 
     func testString() {
         for testCase in testCases {
-            assert(String.string(from: testCase.1) == testCase.0)
+            let converted = String.string(from: testCase.1)
+            assert(converted == testCase.0)
         }
     }
 
