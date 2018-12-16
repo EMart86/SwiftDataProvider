@@ -110,7 +110,7 @@ enum Type {
 
 class ViewModel {
     let contentAdapter: ContentProviderAdapter
-    let type: Type = .dynamic
+    let type: Type = .static
     init() {
         contentAdapter = type.initialize
     }
