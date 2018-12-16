@@ -12,3 +12,7 @@ end
 target 'SelectTimeExample' do
     pod 'SwiftDataProvider', :path => '../'
 end
+
+target 'SwiftDataProvider_Tests' do
+    pod 'SwiftDataProvider', :path => '../'
+end
