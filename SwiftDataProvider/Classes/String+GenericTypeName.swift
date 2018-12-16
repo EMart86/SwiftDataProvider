@@ -10,8 +10,8 @@ import Foundation
 extension String {
     internal static func string<T>(from type: T) -> String {
         let string = String(describing: type)
-        if string.hasPrefix("<"), let range = string.range(of: ":") {
-            return String.string(from: String(string[1..<range.lowerBound.encodedOffset]))
+        if string.hasPrefix("<"), let range = string.range(of: "<"), let range2 = string.firstIndex(of: ":") {
+            return String.string(from: String(string[range.upperBound..<range2]))
         } else if let range = string.range(of: "(") {
             return String(string[0..<range.lowerBound.encodedOffset])
         } else if let range = string.range(of: ".", options: .backwards),
