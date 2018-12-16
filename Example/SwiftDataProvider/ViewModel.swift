@@ -50,7 +50,7 @@ enum Type {
                         return false
                     }
                     return content.date > start && content.date < end
-                }), "Title": "\(calendar.component(.weekOfYear, from: start)) \(calendar.component(.year, from: end))"] as [String : Any]
+                }), "Title": "\(calendar.component(.month, from: start)) \(calendar.component(.year, from: end))"] as [String : Any]
                 guard let sections = sections else {
                     return .new(context)
                 }

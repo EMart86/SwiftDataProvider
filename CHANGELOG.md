@@ -1,5 +1,10 @@
 ## What's new in
 
+### 1.11.1
+
+* fix NSObject classes couldn't be inferred correctly as Reuseable Types
+** added Testcase for this
+
 ### 1.11.0
 
 * provide section sorter, because it is easiert to provide a sorting algorythm than do can calculation the position in the ```contentSectionizer``` closure.
