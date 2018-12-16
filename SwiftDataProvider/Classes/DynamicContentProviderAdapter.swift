@@ -25,12 +25,15 @@ open class DynamicContentProviderAdapter<Content: Comparable>: ContentProviderAd
         return section
     }()
     
-    private func section(for content: Content) -> Section {
+    private func section(for content: Content, readOnly: Bool = false) -> Section? {
         guard let contentSectionizer = contentSectionizer else {
             return firstSection
         }
         switch (contentSectionizer(content, sections)) {
         case .new(let context):
+            if readOnly {
+                return nil
+            }
             let section = Section(context: context)
             add(content: content, to: section)
             var sections = self.sections
@@ -52,9 +55,47 @@ open class DynamicContentProviderAdapter<Content: Comparable>: ContentProviderAd
             return section
         case .use(let sectionAtIndex):
             let section = sections[sectionAtIndex]
-            add(content: content, to: section)
+            if !readOnly {
+                add(content: content, to: section)
+            }
             return section
         }
+    }
+    
+    public func add(_ content: Content) {
+        _ = section(for: content)
+    }
+    
+    public func remove(_ content: Content) {
+        guard let index = contentArray.index(of: content) else {
+            return
+        }
+        contentArray.remove(at: index)
+        section(for: content, readOnly: true)?.delete(row: content)
+    }
+    
+    public func reload(at indexPath: IndexPath) {
+        section(at: indexPath.section)?.reload(at: indexPath.row)
+    }
+    
+    override func updateRows(for section: Section) {
+        if let sectionContentUpdate = sectionContentUpdate {
+            switch (sectionContentUpdate(section, section.context)) {
+            case .nothing:
+                break
+            case .reload:
+                section.setNeedsUpdate(true)
+            }
+        }
+    }
+    
+    // MARK: - Private
+    
+    private func section(at index: Int) -> Section? {
+        guard sections.indices.contains(index) else {
+            return nil
+        }
+        return sections[index]
     }
     
     private func add(content: Content, to section: Section) {
@@ -70,30 +111,5 @@ open class DynamicContentProviderAdapter<Content: Comparable>: ContentProviderAd
         
         contentArray.append(content)
         section.insert(row: content, at: index)
-    }
-    
-    public func add(_ content: Content) {
-        _ = section(for: content)
-    }
-    
-    public func remove(_ content: Content) {
-        guard let index = contentArray.index(of: content) else {
-            return
-        }
-        contentArray.remove(at: index)
-        section(for: content).delete(row: content)
-    }
-    
-    // MARK: - Private
-    
-    override func updateRows(for section: Section) {
-        if let sectionContentUpdate = sectionContentUpdate {
-            switch (sectionContentUpdate(section, section.context)) {
-            case .nothing:
-                break
-            case .reload:
-                section.setNeedsUpdate(true)
-            }
-        }
     }
 }

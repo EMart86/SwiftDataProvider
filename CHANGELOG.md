@@ -1,5 +1,9 @@
 ## What's new in
 
+### 1.12.0
+
+* implement reload of content in section for DynamicContentProviderAdapter
+
 ### 1.11.3
 
 * create further testcases
