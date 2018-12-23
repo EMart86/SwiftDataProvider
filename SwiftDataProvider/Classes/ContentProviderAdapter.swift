@@ -36,15 +36,15 @@ open class ContentProviderAdapter {
     open func commit() {
         sections.enumerated().forEach {
             if let indexPathsAndAnimations = $0.element.indexPaths(for: $0.offset) {
-                if let indexPaths = indexPathsAndAnimations.delete {
+                if let indexPaths = indexPathsAndAnimations.delete, !indexPaths.isEmpty {
                     context.deleteRows.formUnion(indexPaths.keys)
                     context.mergeCell(animations: indexPaths)
                 }
-                if let indexPaths = indexPathsAndAnimations.insert {
+                if let indexPaths = indexPathsAndAnimations.insert, !indexPaths.isEmpty {
                     context.insertRows.formUnion(indexPaths.keys)
                     context.mergeCell(animations: indexPaths)
                 }
-                if let indexPaths = indexPathsAndAnimations.reload {
+                if let indexPaths = indexPathsAndAnimations.reload, !indexPaths.isEmpty {
                     context.reloadRows.formUnion(indexPaths.keys)
                     context.mergeCell(animations: indexPaths)
                 }
