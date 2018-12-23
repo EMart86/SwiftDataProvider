@@ -51,7 +51,8 @@ open class DynamicContentProviderAdapter<Content: Comparable>: ContentProviderAd
             } else {
                 add(section: section, context: context)
             }
-            commit()
+            
+            commitIfAutoCommitIsEnabled()
             return section
         case .use(let sectionAtIndex):
             let section = sections[sectionAtIndex]
@@ -64,6 +65,8 @@ open class DynamicContentProviderAdapter<Content: Comparable>: ContentProviderAd
     
     public func add(_ content: Content) {
         _ = section(for: content)
+        
+        commitIfAutoCommitIsEnabled()
     }
     
     public func remove(_ content: Content) {
@@ -71,11 +74,22 @@ open class DynamicContentProviderAdapter<Content: Comparable>: ContentProviderAd
             return
         }
         contentArray.remove(at: index)
-        section(for: content, readOnly: true)?.delete(row: content)
+        
+        guard let section = self.section(containing: content) else {
+            return
+        }
+        section.delete(row: content)
+        if section.rows.isEmpty {
+            remove(section: section)
+        }
+        
+        commitIfAutoCommitIsEnabled()
     }
     
     public func reload(at indexPath: IndexPath) {
         section(at: indexPath.section)?.reload(at: indexPath.row)
+        
+        commitIfAutoCommitIsEnabled()
     }
     
     override func updateRows(for section: Section) {
@@ -90,6 +104,19 @@ open class DynamicContentProviderAdapter<Content: Comparable>: ContentProviderAd
     }
     
     // MARK: - Private
+    
+    fileprivate func commitIfAutoCommitIsEnabled() {
+        guard isAutoCommitEnabled else {
+            return
+        }
+        commit()
+    }
+    
+    private func section<Content: Comparable>(containing content: Content) -> Section? {
+        return sections.flatMap { $0 }.first {
+            $0.rows.compactMap { $0 as? Content }.first { $0 == content } != nil
+        }
+    }
     
     private func section(at index: Int) -> Section? {
         guard sections.indices.contains(index) else {
