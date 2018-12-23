@@ -1,5 +1,9 @@
 ## What's new in
 
+### 1.12.1
+
+* fix reload bugs
+
 ### 1.12.0
 
 * implement reload of content in section for DynamicContentProviderAdapter
