@@ -29,7 +29,8 @@ open class DynamicContentProviderAdapter<Content: Comparable>: ContentProviderAd
         guard let contentSectionizer = contentSectionizer else {
             return firstSection
         }
-        switch (contentSectionizer(content, sections)) {
+        let totalSections = self.sections + (context.insertSections?.values.map { $0 } ?? [])
+        switch contentSectionizer(content, totalSections) {
         case .new(let context):
             if readOnly {
                 return nil
@@ -55,7 +56,7 @@ open class DynamicContentProviderAdapter<Content: Comparable>: ContentProviderAd
             commitIfAutoCommitIsEnabled()
             return section
         case .use(let sectionAtIndex):
-            let section = sections[sectionAtIndex]
+            let section = totalSections[sectionAtIndex]
             if !readOnly {
                 add(content: content, to: section)
             }
@@ -79,7 +80,7 @@ open class DynamicContentProviderAdapter<Content: Comparable>: ContentProviderAd
             return
         }
         section.delete(row: content)
-        if section.rows.isEmpty {
+        if section.totalRows.isEmpty {
             remove(section: section)
         }
         
@@ -113,7 +114,7 @@ open class DynamicContentProviderAdapter<Content: Comparable>: ContentProviderAd
     }
     
     private func section<Content: Comparable>(containing content: Content) -> Section? {
-        return sections.flatMap { $0 }.first {
+        return sections.compactMap { $0 }.first {
             $0.rows.compactMap { $0 as? Content }.first { $0 == content } != nil
         }
     }

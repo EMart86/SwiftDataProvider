@@ -8,12 +8,12 @@
 import Foundation
 
 public class Modification {
-    private(set) var reload: [Int]?
-    private(set) var insert: [Int]?
+    private(set) var reload: [Int: Any?]?
+    private(set) var insert: [Int: Any]?
     private(set) var delete: [Int]?
     
-    public init(reload: [Int]? = nil,
-                insert: [Int]? = nil,
+    public init(reload: [Int: Any]? = nil,
+                insert: [Int: Any]? = nil,
                 delete: [Int]? = nil) {
         self.reload = reload
         self.delete = delete
@@ -22,58 +22,37 @@ public class Modification {
     
     private var indexAnimationMapper = [Int: CellModifications.Animation]()
     
-    public func insert(at index: Int, animation: CellModifications.Animation = .automatic) {
-        if indexAnimationMapper[index] != nil {
-            for key in indexAnimationMapper.keys.sorted().reversed() {
-                if key < index {
-                    break
-                }
-                indexAnimationMapper[key + 1] = indexAnimationMapper[key]
-            }
-        }
-        if let _index = delete?.index(of: index) {
-            delete?.remove(at: _index)
-            var reload = self.reload ?? [Int]()
-            reload.append(index)
-            indexAnimationMapper[index] = animation
-            self.reload = reload
+    public func insert(content: Any, at index: Int, animation: CellModifications.Animation = .automatic) {
+        if removeDeletedRow(index: index) {
+            reload(content: content, at: index, animation: animation)
             return
         }
-        var insert = self.insert ?? [Int]()
-        for key in insert.sorted().reversed() {
-            if key < index {
-                break
-            }
-            insert.remove(at: key)
-            insert.append(key + 1)
-        }
-        if !insert.contains(index) {
-            insert.append(index)
-        }
-        indexAnimationMapper[index] = animation
+        
+        insertAnimation(animation, at: index)
+        updateInsertIndexes(below: index)
+        
+        var insert = self.insert ?? [Int: Any]()
+        insert[index] = content
         self.insert = insert
     }
     
-    public func reload(at index: Int, animation: CellModifications.Animation = .automatic) {
-        if insert?.contains(index) == true {
+    public func reload(content: Any? = nil, at index: Int, animation: CellModifications.Animation = .automatic) {
+        guard insert?[index] == nil else {
             return
         }
-        if let _index = delete?.index(of: index) {
-            delete?.remove(at: _index)
-        }
-        var reload = self.reload ?? [Int]()
-        reload.append(index)
+        
+        removeDeletedRow(index: index)
+        
+        var reload = self.reload ?? [Int: Any?]()
+        reload[index] = content
         indexAnimationMapper[index] = animation
         self.reload = reload
     }
     
     public func delete(at index: Int, animation: CellModifications.Animation = .automatic) {
-        if let _index = insert?.index(of: index) {
-            insert?.remove(at: _index)
-        }
-        if let _index = reload?.index(of: index) {
-            reload?.remove(at: _index)
-        }
+        removeInsertedRow(index: index)
+        removeReloadedRow(index: index)
+        
         var delete = self.delete ?? [Int]()
         delete.append(index)
         indexAnimationMapper[index] = animation
@@ -90,6 +69,56 @@ public class Modification {
     public func animation(for index: Int) -> CellModifications.Animation? {
         return indexAnimationMapper[index]
     }
+    
+    // MARK: - Private
+    
+    @discardableResult private func removeDeletedRow(index: Int) -> Bool {
+        guard let index = delete?.index(of: index) else {
+            return false
+        }
+        
+        delete?.remove(at: index)
+        return true
+    }
+    
+    @discardableResult private func removeReloadedRow(index: Int) -> Bool {
+        guard reload?.index(forKey: index) != nil else {
+            return false
+        }
+        
+        reload?.removeValue(forKey: index)
+        return true
+    }
+    
+    @discardableResult private func removeInsertedRow(index: Int) -> Bool {
+        return insert?.removeValue(forKey: index) != nil
+    }
+    
+    private func insertAnimation(_ animation: CellModifications.Animation = .automatic, at index: Int) {
+        if indexAnimationMapper[index] != nil {
+            for key in indexAnimationMapper.keys.sorted().reversed() {
+                if key < index {
+                    break
+                }
+                indexAnimationMapper[key + 1] = indexAnimationMapper[key]
+            }
+        }
+        indexAnimationMapper[index] = animation
+    }
+    
+    private func updateInsertIndexes(below index: Int) {
+        guard var insert = insert else {
+            return
+        }
+        for key in insert.sorted(by: {$0.key > $1.key}) {
+            if key.key < index {
+                break
+            }
+            insert.removeValue(forKey: key.key)
+            insert[key.key + 1] = key.value
+        }
+        self.insert = insert
+    }
 }
 
 public class CellModifications {
@@ -104,7 +133,7 @@ public class CellModifications {
     }
     
     private(set) var reloadSections: IndexSet?
-    private(set) var insertSections: IndexSet?
+    private(set) var insertSections: [Int: Section]?
     private(set) var deleteSections: IndexSet?
     private(set) var movedSections: IndexSet?
     internal var reloadRows: Set<IndexPath>
@@ -117,7 +146,7 @@ public class CellModifications {
                 deleteRows: Set<IndexPath> = Set(),
                 movedRows: Set<IndexPath> = Set(),
                 reloadSections: IndexSet? = nil,
-                insertSections: IndexSet? = nil,
+                insertSections: [Int: Section]? = nil,
                 deleteSections: IndexSet? = nil,
                 movedSections: IndexSet? = nil) {
         self.reloadRows = reloadRows
@@ -175,7 +204,7 @@ public class CellModifications {
         self.movedSections = movedSections
     }
     
-    public func insertSection(at index: Int, animation: Animation = .automatic) {
+    public func insertSection(_ section: Section, at index: Int, animation: Animation = .automatic) {
         if indexAnimationMapper[index] != nil {
             for key in indexAnimationMapper.keys.sorted().reversed() {
                 if key < index {
@@ -190,20 +219,24 @@ public class CellModifications {
             reloadSections?.insert(index)
             return
         }
-        var insertSections = self.insertSections ?? IndexSet()
-        for key in insertSections.sorted().reversed() {
-            if key < index {
+        var insertSections = self.insertSections ?? [Int: Section]()
+        for key in insertSections.keys.sorted().reversed() {
+            guard key >= index else {
                 break
             }
-            insertSections.insert(key + 1)
+            guard let section = insertSections[key] else {
+                continue
+            }
+            
+            insertSections[key + 1] = section
         }
-        insertSections.insert(index)
+        insertSections[index] = section
         self.insertSections = insertSections
     }
     
     public func reloadSection(at index: Int, animation: Animation = .automatic) {
         indexAnimationMapper[index] = animation
-        if insertSections?.contains(index) == true {
+        if insertSections?.keys.contains(index) == true {
             return
         }
         if deleteSections?.contains(index) == true {
@@ -223,8 +256,8 @@ public class CellModifications {
     
     public func deleteSection(at index: Int, animation: Animation = .automatic) {
         indexAnimationMapper[index] = animation
-        if insertSections?.contains(index) == true {
-            insertSections?.remove(index)
+        if insertSections?.keys.contains(index) == true {
+            insertSections?.removeValue(forKey: index)
         }
         if reloadSections?.contains(index) == true {
             reloadSections?.remove(index)
