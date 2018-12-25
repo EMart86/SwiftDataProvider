@@ -19,7 +19,7 @@ open class ContentProviderAdapter {
     }
     
     public internal(set) var sections: [Section]
-    fileprivate let context = CellModifications()
+    internal let context = CellModifications()
     public weak var delegate: ContentProviderAdapterDelegate?
     public var sectionContentUpdate: ((Section, [String: Any]?) -> SectionOperation)?
     public var sectionInitializer: ((Section, Int, [String: Any]?) -> Void)?
@@ -34,44 +34,55 @@ open class ContentProviderAdapter {
     }
     
     open func commit() {
-        sections.enumerated().forEach {
+        context.deleteSections?.forEach { index in
+            sections.remove(at: index)
+        }
+        context.insertSections?.forEach { map in
+            guard !sections.isEmpty else {
+                sections.append(map.value)
+                return
+            }
+            sections.insert(map.value, at: min(sections.count, map.key))
+        }
+        sections.enumerated().forEach { [weak self] in
             if let indexPathsAndAnimations = $0.element.indexPaths(for: $0.offset) {
                 if let indexPaths = indexPathsAndAnimations.delete, !indexPaths.isEmpty {
-                    context.deleteRows.formUnion(indexPaths.keys)
-                    context.mergeCell(animations: indexPaths)
+                    self?.context.deleteRows.formUnion(indexPaths.keys)
+                    self?.context.mergeCell(animations: indexPaths)
                 }
                 if let indexPaths = indexPathsAndAnimations.insert, !indexPaths.isEmpty {
-                    context.insertRows.formUnion(indexPaths.keys)
-                    context.mergeCell(animations: indexPaths)
+                    self?.context.insertRows.formUnion(indexPaths.keys)
+                    self?.context.mergeCell(animations: indexPaths)
                 }
                 if let indexPaths = indexPathsAndAnimations.reload, !indexPaths.isEmpty {
-                    context.reloadRows.formUnion(indexPaths.keys)
-                    context.mergeCell(animations: indexPaths)
+                    self?.context.reloadRows.formUnion(indexPaths.keys)
+                    self?.context.mergeCell(animations: indexPaths)
                 }
             }
             $0.element.clearModification()
         }
+        
         delegate?.commit(modifications: context)
         context.clear()
     }
     
     open func add(section: Section, context: [String: Any]? = nil) {
-        sections.append(section)
+        //        sections.append(section)
         section.insertPredicate = context?[Section.Keys.predicate] as? NSPredicate
         section.delegate = self
         sectionInitializer?(section, sections.endIndex, context)
-        self.context.insertSection(at: sections.count - 1)
+        self.context.insertSection(section, at: sections.count - 1)
         
         commitIfAutoCommitIsEnabled()
     }
     
     open func insert(section: Section, at index: Int, context: [String: Any]? = nil) {
         let correctedIndex = min(sections.endIndex, index)
-        sections.insert(section, at: correctedIndex)
+        //        sections.insert(section, at: correctedIndex)
         section.insertPredicate = context?[Section.Keys.predicate] as? NSPredicate
         section.delegate = self
         sectionInitializer?(section, correctedIndex, context)
-        self.context.insertSection(at: correctedIndex)
+        self.context.insertSection(section, at: correctedIndex)
         
         commitIfAutoCommitIsEnabled()
     }
@@ -89,7 +100,7 @@ open class ContentProviderAdapter {
         guard let index = index(of: section) else {
             return
         }
-        sections.remove(at: index)
+        //        sections.remove(at: index)
         context.deleteSection(at: index)
         
         commitIfAutoCommitIsEnabled()

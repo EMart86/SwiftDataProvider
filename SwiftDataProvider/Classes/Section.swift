@@ -46,23 +46,31 @@ open class Section {
     internal weak var delegate: SectionDelegate?
     internal var modification = Modification()
     
+    internal var totalRows: [Any] {
+        var total = rows
+        if let delete = modification.delete {
+            for index in delete {
+                total.remove(at: index)
+            }
+        }
+        total = total + (modification.insert?.values.map { $0 } ?? [Any]())
+        return total
+    }
+    
     open func add<Content>(row: Content, animation: CellModifications.Animation = .automatic) {
         guard insertPredicate == nil || meetsPredicate(content: row).isTrue else {
             return
         }
-        rows.append(row)
-        modification.insert(at: rows.count - 1, animation: animation)
-        delegate?.didUpdateRows(for: self)
+        //        rows.append(row)
+        modification.insert(content: row, at: totalRows.count, animation: animation)
     }
     
-    open func insert<Content>(row: Content, at index: Int, animation: CellModifications.Animation = .automatic) {
+    open func  insert<Content>(row: Content, at index: Int, animation: CellModifications.Animation = .automatic) {
         guard insertPredicate == nil || meetsPredicate(content: row).isFalse else {
             return
         }
-        rows.insert(row, at: index)
-        modification.insert(at: index, animation: animation)
-        
-        delegate?.didUpdateRows(for: self)
+        //        rows.insert(row, at: index)
+        modification.insert(content: row, at: index, animation: animation)
     }
     
     open func delete<Content: Comparable>(row: Content, animation: CellModifications.Animation = .automatic) {
@@ -73,14 +81,16 @@ open class Section {
     }
     
     open func delete(at index: Int, animation: CellModifications.Animation = .automatic) {
-        rows.remove(at: index)
+        //        rows.remove(at: index)
         modification.delete(at: index, animation: animation)
-        delegate?.didUpdateRows(for: self)
+    }
+    
+    open func replace(row: Any, at index: Int, animation: CellModifications.Animation = .automatic) {
+        modification.reload(content: context, at: index, animation: animation)
     }
     
     open func reload(at index: Int, animation: CellModifications.Animation = .automatic) {
         modification.reload(at: index, animation: animation)
-        delegate?.didUpdateRows(for: self)
     }
     
     open func reload<Content: Comparable>(row: Content, animation: CellModifications.Animation = .automatic) {
@@ -103,8 +113,6 @@ open class Section {
         rows.enumerated().forEach {
             modification.delete(at: $0.offset, animation: animation)
         }
-        rows.removeAll()
-        delegate?.didUpdateRows(for: self)
     }
     
     open func meetsPredicate(content: Any) -> Bool? {
@@ -114,20 +122,31 @@ open class Section {
     internal func indexPaths(for section: Int) -> (reload: [IndexPath: CellModifications.Animation]?, delete: [IndexPath: CellModifications.Animation]?, insert: [IndexPath: CellModifications.Animation]?)? {
         var reload = [IndexPath: CellModifications.Animation]()
         modification.reload?.forEach {
-            reload[IndexPath(row: $0, section: section)] = modification.animation(for: $0) ?? .automatic
+            if let value = $0.value {
+                rows[$0.key] = value
+            }
+            reload[IndexPath(row: $0.key, section: section)] = modification.animation(for: $0.key) ?? .automatic
         }
         var delete = [IndexPath: CellModifications.Animation]()
         modification.delete?.forEach {
+            rows.remove(at: $0)
             delete[IndexPath(row: $0, section: section)] = modification.animation(for: $0) ?? .automatic
         }
         var insert = [IndexPath: CellModifications.Animation]()
-        modification.insert?.forEach {
-            insert[IndexPath(row: $0, section: section)] = modification.animation(for: $0) ?? .automatic
+        modification.insert?.keys.sorted().forEach { key in
+            guard let value = modification.insert?[key] else {
+                return
+            }
+            
+            rows.insert(value, at: key)
+            insert[IndexPath(row: key, section: section)] = modification.animation(for: key) ?? .automatic
         }
         
         if reload.isEmpty && delete.isEmpty && insert.isEmpty {
             return nil
         }
+        
+        delegate?.didUpdateRows(for: self)
         
         return (reload: reload, delete: delete, insert: insert)
     }

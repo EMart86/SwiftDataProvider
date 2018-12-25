@@ -1,5 +1,9 @@
 ## What's new in
 
+### 2.0.0
+
+* changed reload behaviour, update sections will now be triggered when a commit is being performed
+
 ### 1.12.1
 
 * fix reload bugs

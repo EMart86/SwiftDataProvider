@@ -48,7 +48,7 @@ extension UITableView: RecyclerView {
         }
         
         if let insertSections = modifications.insertSections {
-            modifications.animations(for: insertSections).forEach {[weak self] in
+            modifications.animations(for: IndexSet(insertSections.keys)).forEach {[weak self] in
                 self?.insertSections(IndexSet($0.value), with: $0.key.rowAnimation)
             }
         }
@@ -109,7 +109,7 @@ public extension RecyclerView where Self: UITableViewController {
         }
         
         if let insertSections = modifications.insertSections {
-            modifications.animations(for: insertSections).forEach {[weak self] in
+            modifications.animations(for: IndexSet(insertSections.keys)).forEach {[weak self] in
                 self?.tableView.insertSections(IndexSet($0.value), with: $0.key.rowAnimation)
             }
         }
