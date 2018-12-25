@@ -49,7 +49,7 @@ open class Section {
     internal var totalRows: [Any] {
         var total = rows
         if let delete = modification.delete {
-            for index in delete {
+            for index in delete.reversed() {
                 total.remove(at: index)
             }
         }
