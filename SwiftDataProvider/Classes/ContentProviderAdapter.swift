@@ -15,7 +15,7 @@ public protocol ContentProviderAdapterDelegate: class {
 open class ContentProviderAdapter {
     public enum SectionOperation {
         case nothing
-        case reload
+        case reload(CellModifications.Animation)
     }
     
     public internal(set) var sections: [Section]
@@ -67,13 +67,14 @@ open class ContentProviderAdapter {
     }
     
     open func commit() {
-        var sectionsBeforeUpdate = sections
         if let deleteSections = context.deleteSections {
             deleteSections.forEach { index in
                 sections.remove(at: index)
             }
-            delegate?.commit(modifications: CellModifications(deleteSections: context.deleteSections))
-            //            context.deleteSections?.removeAll()
+            let modifications = CellModifications(deleteSections: deleteSections)
+            modifications.mergeSection(animations: context.animations(for: deleteSections))
+            delegate?.commit(modifications: modifications)
+            context.clearDeleteSectiosOnly()
         }
         context.insertSections?.forEach { map in
             guard !sections.isEmpty else {
@@ -131,12 +132,12 @@ open class ContentProviderAdapter {
         commitIfAutoCommitIsEnabled()
     }
     
-    open func remove(section: Section) {
+    open func remove(section: Section, animation: CellModifications.Animation = .automatic) {
         guard let index = index(of: section) else {
             return
         }
         //        sections.remove(at: index)
-        context.deleteSection(at: index)
+        context.deleteSection(at: index, animation: animation)
         
         commitIfAutoCommitIsEnabled()
     }
@@ -163,12 +164,12 @@ open class ContentProviderAdapter {
 }
 
 extension ContentProviderAdapter: SectionDelegate {
-    func section(_ section: Section, needsReload: Bool) {
+    func section(_ section: Section, needsReload: Bool, animation: CellModifications.Animation) {
         guard let index = index(of: section) else {
             return
         }
         if needsReload {
-            context.reloadSection(at: index, animation: .automatic)
+            context.reloadSection(at: index, animation: animation)
         } else {
             context.undoReloadSection(at: index)
         }

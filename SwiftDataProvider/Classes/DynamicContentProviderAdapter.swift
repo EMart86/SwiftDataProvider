@@ -25,14 +25,14 @@ open class DynamicContentProviderAdapter<Content: Comparable>: ContentProviderAd
         return section
     }()
     
-    private func section(for content: Content) -> (Section, Int) {
+    private func section(for content: Content, animation: CellModifications.Animation = .automatic) -> (Section, Int) {
         guard let contentSectionizer = contentSectionizer else {
             return (firstSection, 0)
         }
         switch contentSectionizer(content, totalSections) {
         case .new(let context):
             let section = Section(context: context)
-            add(content: content, to: section)
+            add(content: content, to: section, animation: animation)
             var sections = self.sections
             sections.append(section)
             
@@ -57,13 +57,13 @@ open class DynamicContentProviderAdapter<Content: Comparable>: ContentProviderAd
             return (section, rowIndex)
         case .use(let sectionAtIndex):
             let section = totalSections[sectionAtIndex]
-            add(content: content, to: section)
+            add(content: content, to: section, animation: animation)
             return (section, section.rows.count)
         }
     }
     
-    @discardableResult public func add(_ content: Content) -> IndexPath? {
-        let value = section(for: content)
+    @discardableResult public func add(_ content: Content, animation: CellModifications.Animation = .automatic) -> IndexPath? {
+        let value = section(for: content, animation: animation)
         
         commitIfAutoCommitIsEnabled()
         
@@ -91,7 +91,7 @@ open class DynamicContentProviderAdapter<Content: Comparable>: ContentProviderAd
         return targetIndexPath
     }
     
-    @discardableResult public func remove(_ content: Content) -> IndexPath? {
+    @discardableResult public func remove(_ content: Content, animation: CellModifications.Animation = .automatic) -> IndexPath? {
         guard let index = contentArray.index(of: content) else {
             return nil
         }
@@ -99,19 +99,19 @@ open class DynamicContentProviderAdapter<Content: Comparable>: ContentProviderAd
         
         guard let section = self.section(containing: content),
             let sectionIndex = sections.firstIndex(where: { $0 === section }),
-            let rowIndex = section.delete(row: content) else {
+            let rowIndex = section.delete(row: content, animation: animation) else {
                 return nil
         }
         if section.totalRows.isEmpty {
-            remove(section: section)
+            remove(section: section, animation: animation)
         }
         
         commitIfAutoCommitIsEnabled()
         return IndexPath(row: rowIndex, section: sectionIndex)
     }
     
-    public func reload(at indexPath: IndexPath) {
-        section(at: indexPath.section)?.reload(at: indexPath.row)
+    public func reload(at indexPath: IndexPath, animation: CellModifications.Animation = .automatic) {
+        section(at: indexPath.section)?.reload(at: indexPath.row, animation: animation)
         
         commitIfAutoCommitIsEnabled()
     }
@@ -121,8 +121,8 @@ open class DynamicContentProviderAdapter<Content: Comparable>: ContentProviderAd
             switch (sectionContentUpdate(section, section.context)) {
             case .nothing:
                 break
-            case .reload:
-                section.setNeedsUpdate(true)
+            case .reload(let animation):
+                section.setNeedsUpdate(true, animation: animation)
             }
         }
     }
@@ -149,7 +149,7 @@ open class DynamicContentProviderAdapter<Content: Comparable>: ContentProviderAd
         return sections[index]
     }
     
-    private func add(content: Content, to section: Section) {
+    private func add(content: Content, to section: Section, animation: CellModifications.Animation = .automatic) {
         var rows = section.totalRows.compactMap { $0 as? Content }
         rows.append(content)
         if let sort = sort {
@@ -161,6 +161,6 @@ open class DynamicContentProviderAdapter<Content: Comparable>: ContentProviderAd
         }
         
         contentArray.append(content)
-        section.insert(row: content, at: index)
+        section.insert(row: content, at: index, animation: animation)
     }
 }
