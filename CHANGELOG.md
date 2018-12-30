@@ -1,5 +1,9 @@
 ## What's new in
 
+### 2.2.1
+
+* fixed issue with insert
+
 ### 2.2.0
 
 * removed unhandy intermediate commit: we will do that internally

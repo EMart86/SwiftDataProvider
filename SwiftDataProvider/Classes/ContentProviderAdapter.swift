@@ -76,15 +76,22 @@ open class ContentProviderAdapter {
             delegate?.commit(modifications: modifications)
             context.clearDeleteSectiosOnly()
         }
-        context.insertSections?.forEach { map in
-            guard !sections.isEmpty else {
-                sections.append(map.value)
-                //                performUpdate(section: map.value, at: sections.count - 1)
-                return
+        if let insertSections = context.insertSections {
+            insertSections.forEach { map in
+                guard !sections.isEmpty else {
+                    sections.append(map.value)
+                    //                performUpdate(section: map.value, at: sections.count - 1)
+                    return
+                }
+                let index = min(sections.count, map.key)
+                sections.insert(map.value, at: index)
+                //            performUpdate(section: map.value, at: index)
             }
-            let index = min(sections.count, map.key)
-            sections.insert(map.value, at: index)
-            //            performUpdate(section: map.value, at: index)
+            let modifications = CellModifications(insertSections: insertSections)
+            let insertedIndexes = IndexSet(insertSections.keys)
+            modifications.mergeSection(animations: context.animations(for: insertedIndexes))
+            delegate?.commit(modifications: modifications)
+            context.clearInsertSectiosOnly()
         }
         
         sections.enumerated().forEach { [weak self] in

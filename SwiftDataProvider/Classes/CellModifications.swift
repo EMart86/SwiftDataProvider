@@ -300,6 +300,10 @@ public class CellModifications {
         deleteSections = nil
     }
     
+    public func clearInsertSectiosOnly() {
+        insertSections = nil
+    }
+    
     public func clear() {
         cellAnimationMapper.removeAll()
         indexAnimationMapper.removeAll()
