@@ -8,7 +8,7 @@
 import Foundation
 
 protocol SectionDelegate: class {
-    func section(_ section: Section, needsReload: Bool)
+    func section(_ section: Section, needsReload: Bool, animation: CellModifications.Animation)
     func didUpdateRows(for section: Section)
 }
 
@@ -164,7 +164,7 @@ open class Section {
         modification.clear()
     }
     
-    open func setNeedsUpdate(_ needsUpdate: Bool) {
-        delegate?.section(self, needsReload: needsUpdate)
+    open func setNeedsUpdate(_ needsUpdate: Bool, animation: CellModifications.Animation = .automatic) {
+        delegate?.section(self, needsReload: needsUpdate, animation: animation)
     }
 }

@@ -187,6 +187,13 @@ public class CellModifications {
             return new
         }
     }
+    public func mergeSection(animations: [Animation: [Int]]) {
+        for (animation, indexes) in animations {
+            for index in indexes {
+                indexAnimationMapper[index] = animation
+            }
+        }
+    }
     
     public func animations(for indexSet: IndexSet) -> [Animation: [Int]] {
         var mapper = [Animation: [Int]]()
@@ -287,6 +294,10 @@ public class CellModifications {
         var deleteSections = self.deleteSections ?? IndexSet()
         deleteSections.insert(index)
         self.deleteSections = deleteSections
+    }
+    
+    public func clearDeleteSectiosOnly() {
+        deleteSections = nil
     }
     
     public func clear() {

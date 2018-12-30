@@ -1,5 +1,18 @@
 ## What's new in
 
+### 2.2.0
+
+* removed unhandy intermediate commit: we will do that internally
+``` 
+store.value?.store.entities?.onItemUpdated { [weak self] entry, _ in
+    dataProvider.remove(entry)
+    //dataProvider.commit() -> don't need to do that anymore, it's too unhandy and doesn't feel like a proper solution
+    dataProvider.add(entry)
+    dataProvider.commit()
+}
+```
+* added animation options for dynamic content provider adapter
+
 ### 2.1.0
 
 * added move method of uitableview to recycler view
