@@ -11,13 +11,16 @@ public class Modification {
     private(set) var reload: [Int: Any?]?
     private(set) var insert: [Int: Any]?
     private(set) var delete: [Int]?
+    private(set) var move: [Int: IndexPath]?
     
     public init(reload: [Int: Any]? = nil,
                 insert: [Int: Any]? = nil,
-                delete: [Int]? = nil) {
+                delete: [Int]? = nil,
+                move: [Int: IndexPath]? = nil) {
         self.reload = reload
         self.delete = delete
         self.insert = insert
+        self.move = move
     }
     
     private var indexAnimationMapper = [Int: CellModifications.Animation]()
@@ -50,13 +53,30 @@ public class Modification {
     }
     
     public func delete(at index: Int, animation: CellModifications.Animation = .automatic) {
-        removeInsertedRow(index: index)
+        if removeInsertedRow(index: index) {
+            return
+        }
         removeReloadedRow(index: index)
         
         var delete = self.delete ?? [Int]()
         delete.append(index)
         indexAnimationMapper[index] = animation
         self.delete = delete
+    }
+    
+    public func move(from index: Int, to indexPath: IndexPath, animation: CellModifications.Animation = .automatic) -> Any? {
+        if let object = insert?[index] {
+            removeInsertedRow(index: index)
+            return object
+        }
+        removeReloadedRow(index: index)
+        removeDeletedRow(index: index)
+        
+        var move = self.move ?? [Int: IndexPath]()
+        move[index] = indexPath
+        indexAnimationMapper[index] = animation
+        self.move = move
+        return nil
     }
     
     public func clear() {
@@ -135,20 +155,20 @@ public class CellModifications {
     private(set) var reloadSections: IndexSet?
     private(set) var insertSections: [Int: Section]?
     private(set) var deleteSections: IndexSet?
-    private(set) var movedSections: IndexSet?
+    private(set) var movedSections: [Int: Int]?
     internal var reloadRows: Set<IndexPath>
     internal var insertRows: Set<IndexPath>
     internal var deleteRows: Set<IndexPath>
-    internal var movedRows: Set<IndexPath>
+    internal var movedRows: [IndexPath: (IndexPath, Any)]
     
     public init(reloadRows: Set<IndexPath> =  Set(),
                 insertRows: Set<IndexPath> = Set(),
                 deleteRows: Set<IndexPath> = Set(),
-                movedRows: Set<IndexPath> = Set(),
+                movedRows: [IndexPath: (IndexPath, Any)] = [IndexPath: (IndexPath, Any)](),
                 reloadSections: IndexSet? = nil,
                 insertSections: [Int: Section]? = nil,
                 deleteSections: IndexSet? = nil,
-                movedSections: IndexSet? = nil) {
+                movedSections: [Int: Int]? = nil) {
         self.reloadRows = reloadRows
         self.deleteRows = deleteRows
         self.insertRows = insertRows
@@ -197,10 +217,11 @@ public class CellModifications {
             deleteSection(at: sourceIndex, animation: animation)
             return
         }
-        guard let content = self.movedSections?.remove(sourceIndex) else {
+        guard let content = self.movedSections?.removeValue(forKey: sourceIndex) else {
             return
         }
-        var movedSections = self.movedSections ?? IndexSet()
+        var movedSections = self.movedSections ?? [Int: Int]()
+        movedSections[sourceIndex] = targetIndex
         self.movedSections = movedSections
     }
     
@@ -258,6 +279,7 @@ public class CellModifications {
         indexAnimationMapper[index] = animation
         if insertSections?.keys.contains(index) == true {
             insertSections?.removeValue(forKey: index)
+            return
         }
         if reloadSections?.contains(index) == true {
             reloadSections?.remove(index)
@@ -273,8 +295,10 @@ public class CellModifications {
         reloadRows = Set()
         insertRows = Set()
         deleteRows = Set()
+        movedRows = [IndexPath: (IndexPath, Any)]()
         reloadSections = nil
         insertSections = nil
         deleteSections = nil
+        movedSections = nil
     }
 }

@@ -25,66 +25,89 @@ open class DynamicContentProviderAdapter<Content: Comparable>: ContentProviderAd
         return section
     }()
     
-    private func section(for content: Content, readOnly: Bool = false) -> Section? {
+    private func section(for content: Content) -> (Section, Int) {
         guard let contentSectionizer = contentSectionizer else {
-            return firstSection
+            return (firstSection, 0)
         }
-        let totalSections = self.sections + (context.insertSections?.values.map { $0 } ?? [])
         switch contentSectionizer(content, totalSections) {
         case .new(let context):
-            if readOnly {
-                return nil
-            }
             let section = Section(context: context)
             add(content: content, to: section)
             var sections = self.sections
             sections.append(section)
             
+            var rowIndex = 0
             if let sortSections = sortSections {
                 let sortedSections = sections.sorted(by: sortSections)
                 if let index = sortedSections.index(where: {
                     section === $0
                 }) {
                     insert(section: section, at: index, context: context)
+                    rowIndex = index
                 } else {
                     add(section: section, context: context)
+                    rowIndex = section.rows.count
                 }
             } else {
                 add(section: section, context: context)
+                rowIndex = section.rows.count
             }
             
             commitIfAutoCommitIsEnabled()
-            return section
+            return (section, rowIndex)
         case .use(let sectionAtIndex):
             let section = totalSections[sectionAtIndex]
-            if !readOnly {
-                add(content: content, to: section)
-            }
-            return section
+            add(content: content, to: section)
+            return (section, section.rows.count)
         }
     }
     
-    public func add(_ content: Content) {
-        _ = section(for: content)
+    @discardableResult public func add(_ content: Content) -> IndexPath? {
+        let value = section(for: content)
         
         commitIfAutoCommitIsEnabled()
+        
+        guard let sectionIndex = sections.firstIndex(where: { $0 === value.0 }) else {
+            return nil
+        }
+        return IndexPath(row: value.1, section: sectionIndex)
     }
     
-    public func remove(_ content: Content) {
+    public func move(_ content: Content) -> IndexPath? {
+        defer {
+            commitIfAutoCommitIsEnabled()
+        }
+        
+        guard let source = remove(content) else {
+            return add(content)
+        }
+        let value = section(for: content)
+        value.0.delete(at: value.1)
+        guard let targetSection = sections.firstIndex(where: { $0 === value.0 }) else {
+            return nil
+        }
+        let targetIndexPath = IndexPath(row: value.1, section: targetSection)
+        sections[source.section].move(from: source.row, to: targetIndexPath)
+        return targetIndexPath
+    }
+    
+    @discardableResult public func remove(_ content: Content) -> IndexPath? {
         guard let index = contentArray.index(of: content) else {
-            return
+            return nil
         }
         contentArray.remove(at: index)
         
-        guard let section = self.section(containing: content) else {
-            return
+        guard let section = self.section(containing: content),
+            let sectionIndex = sections.firstIndex(where: { $0 === section }),
+            let rowIndex = section.delete(row: content) else {
+                return nil
         }
-        section.delete(row: content)
         if section.totalRows.isEmpty {
             remove(section: section)
         }
         
         commitIfAutoCommitIsEnabled()
+        return IndexPath(row: rowIndex, section: sectionIndex)
     }
     
     public func reload(at indexPath: IndexPath) {
@@ -127,7 +150,7 @@ open class DynamicContentProviderAdapter<Content: Comparable>: ContentProviderAd
     }
     
     private func add(content: Content, to section: Section) {
-        var rows = section.rows.compactMap { $0 as? Content }
+        var rows = section.totalRows.compactMap { $0 as? Content }
         rows.append(content)
         if let sort = sort {
             rows.sort { sort($0, $1) }
