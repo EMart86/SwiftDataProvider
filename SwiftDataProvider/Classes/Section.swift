@@ -46,7 +46,7 @@ open class Section {
     internal weak var delegate: SectionDelegate?
     internal var modification = Modification()
     
-    internal var totalRows: [Any] {
+    public var totalRows: [Any] {
         var total = rows
         if let delete = modification.delete {
             for index in delete.reversed() {
@@ -73,11 +73,12 @@ open class Section {
         modification.insert(content: row, at: index, animation: animation)
     }
     
-    open func delete<Content: Comparable>(row: Content, animation: CellModifications.Animation = .automatic) {
+    open func delete<Content: Comparable>(row: Content, animation: CellModifications.Animation = .automatic) -> Int? {
         guard let index = rows.index(where: { ($0 as? Content) == row } ) else {
-            return
+            return nil
         }
         delete(at: index, animation: animation)
+        return index
     }
     
     open func delete(at index: Int, animation: CellModifications.Animation = .automatic) {
@@ -86,11 +87,15 @@ open class Section {
     }
     
     open func replace(row: Any, at index: Int, animation: CellModifications.Animation = .automatic) {
-        modification.reload(content: context, at: index, animation: animation)
+        modification.reload(content: row, at: index, animation: animation)
     }
     
     open func reload(at index: Int, animation: CellModifications.Animation = .automatic) {
         modification.reload(at: index, animation: animation)
+    }
+    
+    open func move(from sourceIndex: Int, to targetIndexPath: IndexPath) {
+        modification.move(from: sourceIndex, to: targetIndexPath)
     }
     
     open func reload<Content: Comparable>(row: Content, animation: CellModifications.Animation = .automatic) {
@@ -119,7 +124,11 @@ open class Section {
         return insertPredicate?.evaluate(with: content)
     }
     
-    internal func indexPaths(for section: Int) -> (reload: [IndexPath: CellModifications.Animation]?, delete: [IndexPath: CellModifications.Animation]?, insert: [IndexPath: CellModifications.Animation]?)? {
+    internal func indexPaths(for section: Int) -> (reload: [IndexPath: CellModifications.Animation]?, delete: [IndexPath: CellModifications.Animation]?, insert: [IndexPath: CellModifications.Animation]?, move: [IndexPath: (IndexPath, Any)]?)? {
+        var move = [IndexPath: (IndexPath, Any)]()
+        modification.move?.forEach {
+            move[$0.value] = (IndexPath(row: $0.key, section: section), rows.remove(at: $0.key))
+        }
         var reload = [IndexPath: CellModifications.Animation]()
         modification.reload?.forEach {
             if let value = $0.value {
@@ -142,13 +151,13 @@ open class Section {
             insert[IndexPath(row: key, section: section)] = modification.animation(for: key) ?? .automatic
         }
         
-        if reload.isEmpty && delete.isEmpty && insert.isEmpty {
+        if reload.isEmpty && delete.isEmpty && insert.isEmpty && move.isEmpty {
             return nil
         }
         
         delegate?.didUpdateRows(for: self)
         
-        return (reload: reload, delete: delete, insert: insert)
+        return (reload: reload, delete: delete, insert: insert, move: move)
     }
     
     internal func clearModification() {

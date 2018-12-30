@@ -115,7 +115,7 @@ open class SwiftDataProvider: NSObject, UITableViewDataSource, UITableViewDelega
     private func section(at index: Int) -> Section? {
         guard let sections = contentAdapter?.sections,
             sections.indices.contains(index) else {
-            return nil
+                return nil
         }
         return contentAdapter?.sections[index]
     }
@@ -126,7 +126,7 @@ open class SwiftDataProvider: NSObject, UITableViewDataSource, UITableViewDelega
         }
     }
     
-    // MARK -    
+    // MARK -
     // MARK: TableView DataSource
     
     public func numberOfSections(in tableView: UITableView) -> Int {

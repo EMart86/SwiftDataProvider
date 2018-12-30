@@ -1,5 +1,20 @@
 ## What's new in
 
+### 2.1.0
+
+* added move method of uitableview to recycler view
+* instead of committing the UI changes to the tableview, you can now revert them by calling rollback
+* fixed: now neighter the content nor the sections will automatically be added before the commit is being called. Unless the commit has not been called, the content of the sections and rows in the sections stay the same
+* HINT: if you ever come into the situation where you needed to move the last cell from a section into another and remove the last section, you will have to perform an extra ```commit()```  step right after the entry has been removed. This resolves an inconistency in the tableview:
+    ``` 
+    store.value?.store.entities?.onItemUpdated { [weak self] entry, _ in
+        dataProvider.remove(entry)
+        dataProvider.commit()
+        dataProvider.add(entry)
+        dataProvider.commit()
+    }
+    ```
+
 ### 2.0.0
 
 * changed reload behaviour, update sections will now be triggered when a commit is being performed

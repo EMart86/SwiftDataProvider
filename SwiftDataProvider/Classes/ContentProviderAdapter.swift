@@ -33,37 +33,72 @@ open class ContentProviderAdapter {
         }
     }
     
+    internal var totalSections: [Section] {
+        var sections = self.sections
+        sections += (context.insertSections?.values.map { $0 } ?? [])
+        return sections
+    }
+    
+    private func performUpdate(section: Section, at index: Int) {
+        if let indexPathsAndAnimations = section.indexPaths(for: index),
+            context.deleteSections?.contains(index).isFalse ?? true {
+            if let indexPaths = indexPathsAndAnimations.delete, !indexPaths.isEmpty {
+                context.deleteRows.formUnion(indexPaths.keys)
+                context.mergeCell(animations: indexPaths)
+            }
+            if let indexPaths = indexPathsAndAnimations.insert, !indexPaths.isEmpty {
+                context.insertRows.formUnion(indexPaths.keys)
+                context.mergeCell(animations: indexPaths)
+            }
+            if let indexPaths = indexPathsAndAnimations.reload, !indexPaths.isEmpty {
+                context.reloadRows.formUnion(indexPaths.keys)
+                context.mergeCell(animations: indexPaths)
+            }
+            if let itemsToBeMoved = indexPathsAndAnimations.move, !itemsToBeMoved.isEmpty {
+                for (target, (_, object)) in itemsToBeMoved {
+                    if let targetSection = sections[safe: target.section] {
+                        targetSection.insert(row: object, at: target.row)
+                    }
+                }
+                context.movedRows.merge(itemsToBeMoved) { _, new in return new }
+            }
+        }
+        section.clearModification()
+    }
+    
     open func commit() {
-        context.deleteSections?.forEach { index in
-            sections.remove(at: index)
+        var sectionsBeforeUpdate = sections
+        if let deleteSections = context.deleteSections {
+            deleteSections.forEach { index in
+                sections.remove(at: index)
+            }
+            delegate?.commit(modifications: CellModifications(deleteSections: context.deleteSections))
+            //            context.deleteSections?.removeAll()
         }
         context.insertSections?.forEach { map in
             guard !sections.isEmpty else {
                 sections.append(map.value)
+                //                performUpdate(section: map.value, at: sections.count - 1)
                 return
             }
-            sections.insert(map.value, at: min(sections.count, map.key))
+            let index = min(sections.count, map.key)
+            sections.insert(map.value, at: index)
+            //            performUpdate(section: map.value, at: index)
         }
+        
         sections.enumerated().forEach { [weak self] in
-            if let indexPathsAndAnimations = $0.element.indexPaths(for: $0.offset) {
-                if let indexPaths = indexPathsAndAnimations.delete, !indexPaths.isEmpty {
-                    self?.context.deleteRows.formUnion(indexPaths.keys)
-                    self?.context.mergeCell(animations: indexPaths)
-                }
-                if let indexPaths = indexPathsAndAnimations.insert, !indexPaths.isEmpty {
-                    self?.context.insertRows.formUnion(indexPaths.keys)
-                    self?.context.mergeCell(animations: indexPaths)
-                }
-                if let indexPaths = indexPathsAndAnimations.reload, !indexPaths.isEmpty {
-                    self?.context.reloadRows.formUnion(indexPaths.keys)
-                    self?.context.mergeCell(animations: indexPaths)
-                }
-            }
-            $0.element.clearModification()
+            self?.performUpdate(section: $0.element, at: $0.offset)
         }
         
         delegate?.commit(modifications: context)
         context.clear()
+    }
+    
+    open func rollback() {
+        context.clear()
+        sections.forEach {
+            $0.clearModification()
+        }
     }
     
     open func add(section: Section, context: [String: Any]? = nil) {

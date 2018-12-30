@@ -46,6 +46,9 @@ extension UITableView: RecyclerView {
         for i in reload {
             reloadRows(at: i.value, with: i.key.rowAnimation)
         }
+        for (source, target) in modifications.movedRows {
+            moveRow(at: source, to: target.0)
+        }
         
         if let insertSections = modifications.insertSections {
             modifications.animations(for: IndexSet(insertSections.keys)).forEach {[weak self] in
@@ -60,6 +63,11 @@ extension UITableView: RecyclerView {
         if let reloadSections = modifications.reloadSections {
             modifications.animations(for: reloadSections).forEach {[weak self] in
                 self?.reloadSections(IndexSet($0.value), with: $0.key.rowAnimation)
+            }
+        }
+        if let movedSections = modifications.movedSections {
+            for (sourceIndex, targetIndex) in movedSections {
+                moveSection(sourceIndex, toSection: targetIndex)
             }
         }
         endUpdates()
@@ -107,6 +115,9 @@ public extension RecyclerView where Self: UITableViewController {
         for i in reload {
             tableView.reloadRows(at: i.value, with: i.key.rowAnimation)
         }
+        for (source, target) in modifications.movedRows {
+            tableView.moveRow(at: source, to: target.0)
+        }
         
         if let insertSections = modifications.insertSections {
             modifications.animations(for: IndexSet(insertSections.keys)).forEach {[weak self] in
@@ -121,6 +132,11 @@ public extension RecyclerView where Self: UITableViewController {
         if let reloadSections = modifications.reloadSections {
             modifications.animations(for: reloadSections).forEach {[weak self] in
                 self?.tableView.reloadSections(IndexSet($0.value), with: $0.key.rowAnimation)
+            }
+        }
+        if let movedSections = modifications.movedSections {
+            for (sourceIndex, targetIndex) in movedSections {
+                tableView.moveSection(sourceIndex, toSection: targetIndex)
             }
         }
         tableView.endUpdates()
