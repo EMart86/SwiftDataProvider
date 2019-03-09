@@ -33,7 +33,7 @@ open class DynamicContentProviderAdapter<Content: Comparable>: ContentProviderAd
         case .new(let context):
             let section = Section(context: context)
             add(content: content, to: section, animation: animation)
-            var sections = self.sections
+            var sections = self.totalSections
             sections.append(section)
             
             var rowIndex = 0

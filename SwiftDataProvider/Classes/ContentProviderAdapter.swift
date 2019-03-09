@@ -43,8 +43,11 @@ open class ContentProviderAdapter {
         if let indexPathsAndAnimations = section.indexPaths(for: index),
             context.deleteSections?.contains(index).isFalse ?? true {
             if let indexPaths = indexPathsAndAnimations.delete, !indexPaths.isEmpty {
-                context.deleteRows.formUnion(indexPaths.keys)
-                context.mergeCell(animations: indexPaths)
+//                let filteredIndexPaths = indexPaths.keys.filter { context.reloadSections?.contains($0.section) == false }
+//                if !filteredIndexPaths.isEmpty {
+                    context.deleteRows.formUnion(indexPaths.keys)
+                    context.mergeCell(animations: indexPaths)
+//                }
             }
             if let indexPaths = indexPathsAndAnimations.insert, !indexPaths.isEmpty {
                 context.insertRows.formUnion(indexPaths.keys)
@@ -76,7 +79,9 @@ open class ContentProviderAdapter {
             delegate?.commit(modifications: modifications)
             context.clearDeleteSectiosOnly()
         }
+        var shouldClearInsertedSections = false
         if let insertSections = context.insertSections {
+            shouldClearInsertedSections = true
             insertSections.forEach { map in
                 guard !sections.isEmpty else {
                     sections.append(map.value)
@@ -91,6 +96,9 @@ open class ContentProviderAdapter {
             let insertedIndexes = IndexSet(insertSections.keys)
             modifications.mergeSection(animations: context.animations(for: insertedIndexes))
             delegate?.commit(modifications: modifications)
+        }
+        
+        if shouldClearInsertedSections {
             context.clearInsertSectiosOnly()
         }
         
@@ -98,7 +106,16 @@ open class ContentProviderAdapter {
             self?.performUpdate(section: $0.element, at: $0.offset)
         }
         
+        let reloadSections = context.clearReloadSectiosOnly()
+        
         delegate?.commit(modifications: context)
+        
+        if let reloadSections = reloadSections {
+            let modifications = CellModifications(reloadSections: reloadSections)
+            modifications.mergeSection(animations: context.animations(for: reloadSections))
+            delegate?.commit(modifications: modifications)
+        }
+        
         context.clear()
     }
     
