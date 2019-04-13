@@ -296,12 +296,22 @@ public class CellModifications {
         self.deleteSections = deleteSections
     }
     
-    public func clearDeleteSectiosOnly() {
-        deleteSections = nil
+    @discardableResult public func clearReloadSectiosOnly() -> IndexSet? {
+        let reloadSections = self.reloadSections
+        self.reloadSections = nil
+        return reloadSections
     }
     
-    public func clearInsertSectiosOnly() {
-        insertSections = nil
+    @discardableResult public func clearDeleteSectiosOnly() -> IndexSet? {
+        let deleteSections = self.deleteSections
+        self.deleteSections = nil
+        return deleteSections
+    }
+    
+    @discardableResult public func clearInsertSectiosOnly() -> [Int: Section]? {
+        let insertSections = self.insertSections
+        self.insertSections = nil
+        return insertSections
     }
     
     public func clear() {

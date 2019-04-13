@@ -24,7 +24,7 @@ open class Section {
     
     internal var header: TypeAndObject?
     internal var footer: TypeAndObject?
-    open var rows: [Any]
+    open private(set) var rows: [Any]
     open var insertPredicate: NSPredicate?
     public let context: [String: Any]?
     
