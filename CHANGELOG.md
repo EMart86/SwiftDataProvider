@@ -1,5 +1,9 @@
 ## What's new in
 
+### 2.2.2
+
+- fixes issues with deleting
+
 ### 2.2.1
 
 * fixed issue with insert
