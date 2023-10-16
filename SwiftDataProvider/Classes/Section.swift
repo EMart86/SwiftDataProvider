@@ -74,7 +74,7 @@ open class Section {
     }
     
     open func delete<Content: Comparable>(row: Content, animation: CellModifications.Animation = .automatic) -> Int? {
-        guard let index = rows.index(where: { ($0 as? Content) == row } ) else {
+        guard let index = rows.firstIndex(where: { ($0 as? Content) == row } ) else {
             return nil
         }
         delete(at: index, animation: animation)
@@ -99,7 +99,7 @@ open class Section {
     }
     
     open func reload<Content: Comparable>(row: Content, animation: CellModifications.Animation = .automatic) {
-        guard let index = rows.index(where: { ($0 as? Content) == row } ) else {
+        guard let index = rows.firstIndex(where: { ($0 as? Content) == row } ) else {
             return
         }
         reload(at: index, animation: animation)

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol ContentProviderAdapterDelegate: class {
+public protocol ContentProviderAdapterDelegate: AnyObject {
     func reload()
     func commit(modifications: CellModifications)
 }
@@ -176,7 +176,7 @@ open class ContentProviderAdapter {
     internal func updateRows(for section: Section) {}
     
     fileprivate func index(of section: Section) -> Int? {
-        return sections.index(where: { section === $0 })
+        return sections.firstIndex(where: { section === $0 })
     }
     
     fileprivate func commitIfAutoCommitIsEnabled() {

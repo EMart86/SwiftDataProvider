@@ -483,7 +483,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-SelectTimeExample/Pods-SelectTimeExample-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-SelectTimeExample/Pods-SelectTimeExample-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/SwiftDataProvider/SwiftDataProvider.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -492,7 +492,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SelectTimeExample/Pods-SelectTimeExample-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SelectTimeExample/Pods-SelectTimeExample-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		4FC09622A9F337C80CF2E34D /* [CP] Check Pods Manifest.lock */ = {
@@ -519,7 +519,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-LoginExample/Pods-LoginExample-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-LoginExample/Pods-LoginExample-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/SwiftDataProvider/SwiftDataProvider.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -528,7 +528,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-LoginExample/Pods-LoginExample-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-LoginExample/Pods-LoginExample-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		66BDF4FEA2857DEC3A8BD4C6 /* [CP] Embed Pods Frameworks */ = {
@@ -537,7 +537,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-SwiftDataProvider_Tests/Pods-SwiftDataProvider_Tests-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-SwiftDataProvider_Tests/Pods-SwiftDataProvider_Tests-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/SwiftDataProvider/SwiftDataProvider.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -546,7 +546,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SwiftDataProvider_Tests/Pods-SwiftDataProvider_Tests-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SwiftDataProvider_Tests/Pods-SwiftDataProvider_Tests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		AB56F73CC269363413B10C3B /* [CP] Check Pods Manifest.lock */ = {
@@ -573,7 +573,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-SwiftDataProvider_Example/Pods-SwiftDataProvider_Example-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-SwiftDataProvider_Example/Pods-SwiftDataProvider_Example-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/SwiftDataProvider/SwiftDataProvider.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -582,7 +582,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SwiftDataProvider_Example/Pods-SwiftDataProvider_Example-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SwiftDataProvider_Example/Pods-SwiftDataProvider_Example-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		E238E6D43EDA79D6760CB981 /* [CP] Check Pods Manifest.lock */ = {
@@ -811,7 +811,7 @@
 				DEVELOPMENT_TEAM = ZZ3RP82Z38;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = LoginExample/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -841,7 +841,7 @@
 				DEVELOPMENT_TEAM = ZZ3RP82Z38;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = LoginExample/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.emart-software.LoginExample";
@@ -957,6 +957,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = ZZ3RP82Z38;
 				INFOPLIST_FILE = SwiftDataProvider/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.$(PRODUCT_NAME:rfc1034identifier)";
@@ -973,6 +974,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = ZZ3RP82Z38;
 				INFOPLIST_FILE = SwiftDataProvider/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.$(PRODUCT_NAME:rfc1034identifier)";
@@ -996,6 +998,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = Tests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1015,6 +1018,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = Tests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";

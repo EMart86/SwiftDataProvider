@@ -93,7 +93,7 @@ public class Modification {
     // MARK: - Private
     
     @discardableResult private func removeDeletedRow(index: Int) -> Bool {
-        guard let index = delete?.index(of: index) else {
+        guard let index = delete?.firstIndex(of: index) else {
             return false
         }
         
