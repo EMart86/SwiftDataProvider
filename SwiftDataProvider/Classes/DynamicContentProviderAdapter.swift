@@ -39,7 +39,7 @@ open class DynamicContentProviderAdapter<Content: Comparable>: ContentProviderAd
             var rowIndex = 0
             if let sortSections = sortSections {
                 let sortedSections = sections.sorted(by: sortSections)
-                if let index = sortedSections.index(where: {
+                if let index = sortedSections.firstIndex(where: {
                     section === $0
                 }) {
                     insert(section: section, at: index, context: context)
@@ -92,7 +92,7 @@ open class DynamicContentProviderAdapter<Content: Comparable>: ContentProviderAd
     }
     
     @discardableResult public func remove(_ content: Content, animation: CellModifications.Animation = .automatic) -> IndexPath? {
-        guard let index = contentArray.index(of: content) else {
+        guard let index = contentArray.firstIndex(of: content) else {
             return nil
         }
         contentArray.remove(at: index)
@@ -156,7 +156,7 @@ open class DynamicContentProviderAdapter<Content: Comparable>: ContentProviderAd
             rows.sort { sort($0, $1) }
         }
         
-        guard let index = rows.index(of: content) else {
+        guard let index = rows.firstIndex(of: content) else {
             return
         }
         
