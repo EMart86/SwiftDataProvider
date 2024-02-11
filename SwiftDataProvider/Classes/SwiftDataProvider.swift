@@ -12,6 +12,7 @@ open class SwiftDataProvider: NSObject, UITableViewDataSource, UITableViewDelega
     private var registeredHeaderFooterForContentType = [String: AssemblableHeaderFooter]()
     
     public weak var tableViewDelegate: UITableViewDelegate?
+    public weak var tableViewDataSource: UITableViewDataSource?
     public weak var contentAdapter: ContentProviderAdapter? {
         didSet {
             contentAdapter?.delegate = self
@@ -26,6 +27,7 @@ open class SwiftDataProvider: NSObject, UITableViewDataSource, UITableViewDelega
         super.init()
         recyclerView.dataSource = self
         tableViewDelegate = recyclerView.delegate
+        tableViewDataSource = recyclerView.dataSource
         recyclerView.delegate = self
     }
     
@@ -158,8 +160,18 @@ open class SwiftDataProvider: NSObject, UITableViewDataSource, UITableViewDelega
         return dequeueReusableHeaderFooterView(for: footer.object, as: footer.type)
     }
     
-    public func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {return false}
-    public func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {return false}
+    public func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        guard tableViewDataSource !== self else {
+            return false
+        }
+        return tableViewDataSource?.tableView?(tableView, canEditRowAt: indexPath) ?? false
+    }
+    public func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
+        guard tableViewDataSource !== self else {
+            return false
+        }
+        return tableViewDataSource?.tableView?(tableView, canMoveRowAt: indexPath) ?? false
+    }
     public func sectionIndexTitles(for tableView: UITableView) -> [String]? {return nil}
     public func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {return 0}
     public func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {}

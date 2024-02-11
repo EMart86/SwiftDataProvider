@@ -131,7 +131,7 @@ open class ContentProviderAdapter {
         section.insertPredicate = context?[Section.Keys.predicate] as? NSPredicate
         section.delegate = self
         sectionInitializer?(section, sections.endIndex, context)
-        self.context.insertSection(section, at: sections.count - 1)
+        self.context.insertSection(section, at: max(sections.count, self.context.insertSections?.count ?? 0))
         
         commitIfAutoCommitIsEnabled()
     }

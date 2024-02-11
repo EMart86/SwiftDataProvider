@@ -16,3 +16,7 @@ end
 target 'SwiftDataProvider_Tests' do
     pod 'SwiftDataProvider', :path => '../'
 end
+
+target 'StaticContent' do
+    pod 'SwiftDataProvider', :path => '../'
+end
